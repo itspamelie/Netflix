@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('generos', function (Blueprint $table) {
-            $table->id();              // PK id_genero
-            $table->string('nombre');   // nombre del género
-            $table->timestamps();                 // opcional, pero útil
+         Schema::create('imgs', function (Blueprint $table) {
+            $table->id();
+            $table->string('nombre');
+            $table->string('img');
+            $table->timestamps();
         });
     }
 

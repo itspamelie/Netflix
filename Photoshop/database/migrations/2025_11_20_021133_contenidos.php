@@ -20,7 +20,9 @@ return new class extends Migration
             $table->string('duracion')->nullable();
             $table->string('clasificacion');
             $table->string('imagen');
+            $table->string('video');
             $table->foreignId('genero_id')->constrained('generos');
+            $table->foreignId('clasificacion_id')->constrained('clasificaciones');
             
             $table->timestamps();
         });
