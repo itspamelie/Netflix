@@ -11,15 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('temporadas', function (Blueprint $table) {
-    $table->id(); 
-    $table->foreignId('contenido_id')->constrained('contenidos');
-    $table->integer('numero'); 
-    $table->string('titulo')->nullable();
-
-    $table->timestamps();
-});
-
+         Schema::create('suscripciones', function (Blueprint $table) {
+            $table->id();
+            $table->string('nombre');
+            $table->string('descripcion');
+            $table->integer('cantidad_perfiles');
+            $table->float('costo_mensual');
+            $table->date('fecha_pagos');
+            $table->timestamps();
+        });
     }
 
     /**

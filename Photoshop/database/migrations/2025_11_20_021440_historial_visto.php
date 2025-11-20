@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('historiales', function (Blueprint $table) {
     $table->id();
-    $table->foreignId('user_id')->constrained('users');
-    // Contenido visto (película o serie)
+    $table->foreignId('perfil_id')->constrained('perfiles');
     $table->foreignId('contenido_id')->constrained('contenidos');
     // Episodio visto (solo se usa si el contenido es serie)
     // Si es película, este valor será NULL

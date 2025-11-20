@@ -11,15 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('temporadas', function (Blueprint $table) {
-    $table->id(); 
-    $table->foreignId('contenido_id')->constrained('contenidos');
-    $table->integer('numero'); 
-    $table->string('titulo')->nullable();
-
-    $table->timestamps();
-});
-
+         Schema::create('anuncios', function (Blueprint $table) {
+            $table->id();
+            $table->string('nombre');
+            $table->string('archivo');
+            $table->string('tipo');
+            $table->timestamps();
+        });
     }
 
     /**

@@ -20,21 +20,21 @@ class MiListaSeeder extends Seeder
             // ===============================================
 
             [
-                'user_id' => 1,
+                'perfil_id' => 1,
                 'contenido_id' => 1, // Avengers (película)
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
 
             [
-                'user_id' => 1,
+                'perfil_id' => 1,
                 'contenido_id' => 3, // Breaking Bad (serie)
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
 
             [
-                'user_id' => 1,
+                'perfil_id' => 1,
                 'contenido_id' => 4, // Stranger Things (serie)
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -45,7 +45,7 @@ class MiListaSeeder extends Seeder
             // ===============================================
 
             [
-                'user_id' => 2,
+                'perfil_id' => 2,
                 'contenido_id' => 2, // Joker
                 'created_at' => now(),
                 'updated_at' => now(),

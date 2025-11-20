@@ -16,14 +16,12 @@ return new class extends Migration
             $table->string('titulo');
             $table->string('descripcion');
             $table->string('tipo');
-            $table->string('añoEstreno');
+            $table->string('fechaEstreno');
             $table->string('duracion')->nullable();
-            $table->string('clasificacion');
-            $table->string('imagen');
-            $table->string('video');
+            $table->string('portada');
+            $table->string('video')->nullable();
             $table->foreignId('genero_id')->constrained('generos');
             $table->foreignId('clasificacion_id')->constrained('clasificaciones');
-            
             $table->timestamps();
         });
     }

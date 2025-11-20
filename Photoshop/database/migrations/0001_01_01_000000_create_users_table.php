@@ -17,8 +17,11 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->foreignId('img_id')->constrained('imgs');
-            $table->string('role');
+            $table->string('phone');
+            $table->integer('role');
+            $table->string('img');
+            $table->foreignId('suscripcion_id')->constrained('suscripciones');
+            $table->boolean('estatus_suscripcion')->default(false)->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

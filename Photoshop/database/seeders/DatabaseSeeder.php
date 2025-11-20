@@ -24,6 +24,9 @@ class DatabaseSeeder extends Seeder
         EpisodioSeeder::class,
         HistorialSeeder::class,
         MilistaSeeder::class,
+        ClasificacionSeeder::class,
+        PerfilesSeeder::class,
+        ImgSeeder::class,
     ]);
 
     }

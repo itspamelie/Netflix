@@ -12,16 +12,15 @@ return new class extends Migration
     public function up(): void
     {
        Schema::create('episodios', function (Blueprint $table) {
-            $table->id(); // id_temporada
+            $table->id();
             $table->string('titulo');//titulo de la serie o pelicukla
             $table->integer('numero'); // número de episodio dentro de la temporada
             $table->integer('duracion'); // duración
             $table->string('sinopsis');
-
+            $table->string('video');
             $table->timestamps(); //recomendado
-
-
             $table->foreignId('temporada_id')->constrained('temporadas');
+            $table->foreignId('contenido_id')->constrained('contenidos');
         });
     }
 

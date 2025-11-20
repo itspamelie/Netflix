@@ -13,14 +13,11 @@ return new class extends Migration
     {
         Schema::create('listas', function (Blueprint $table) {
     $table->id();
-    // ID único del registro (cada fila = un contenido guardado por un user)
-    $table->foreignId('user_id')->constrained('users');
-    // Usuario que guardó el contenido
+    $table->foreignId('perfil_id')->constrained('perfiles');
     $table->foreignId('contenido_id')->constrained('contenidos');
-    // Contenido que quiere ver más tarde (película o serie)
     $table->timestamps();
-    // Cuándo se agregó a la lista
-    $table->unique(['user_id', 'contenido_id']);
+    // Cuándo se agregó a la lista...
+    $table->unique(['perfil_id', 'contenido_id']);
     // Evita que el usuario agregue el mismo contenido dos veces
 });
 
