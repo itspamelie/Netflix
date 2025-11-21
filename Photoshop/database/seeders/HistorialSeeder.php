@@ -15,13 +15,13 @@ class HistorialSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('historial_visto')->insert([
+        DB::table('historiales')->insert([
 
             // ======================================================
             // 1) Película vista parcialmente (sin episodio_id)
             // ======================================================
             [
-                'perfil_id' => 1,                // usuario 1 (admin, por ej.)
+                'perfil_id' => 2,                // usuario 1 (admin, por ej.)
                 'contenido_id' => 1,           // Avengers Endgame (película)
                 'episodio_id' => null,         // las películas NO tienen episodio
                 'progreso_segundos' => 3500,   // 58 minutos aprox
@@ -34,7 +34,7 @@ class HistorialSeeder extends Seeder
             // 2) Serie: Breaking Bad - Episodio 1 comenzado
             // ======================================================
             [
-                'perfil_id' => 1,
+                'perfil_id' => 2,
                 'contenido_id' => 3,           // Breaking Bad
                 'episodio_id' => 1,            // Episodio 1 (Pilot)
                 'progreso_segundos' => 1200,   // 20 minutos
@@ -47,7 +47,7 @@ class HistorialSeeder extends Seeder
             // 3) Serie: Breaking Bad - Episodio 2 completado
             // ======================================================
             [
-                'perfil_id' => 1,
+                'perfil_id' => 2,
                 'contenido_id' => 3,           
                 'episodio_id' => 2,            // Episodio 2
                 'progreso_segundos' => 9999,   // marca alta → terminado
@@ -60,9 +60,9 @@ class HistorialSeeder extends Seeder
             // 4) Serie: Stranger Things - Episodio 1 empezado
             // ======================================================
             [
-                'perfil_id' => 1,
+                'perfil_id' => 3,
                 'contenido_id' => 4,           // Stranger Things
-                'episodio_id' => 6,            // Episodio 1 de S1
+                'episodio_id' => 2,            // Episodio 1 de S1
                 'progreso_segundos' => 1800,   // 30 minutos
                 'completado' => false,
                 'created_at' => now(),

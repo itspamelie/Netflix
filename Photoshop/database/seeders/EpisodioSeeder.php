@@ -24,6 +24,7 @@ class EpisodioSeeder extends Seeder
                 'numero' => 1,
                 'titulo' => 'Pilot',
                 'duracion' => 58,
+                'video' => 'pilotbreakingbad.mp4',
                 'sinopsis' => 'Walter White descubre el negocio de la metanfetamina.',
                 'created_at' => now(),
                 'updated_at' => now()
@@ -38,6 +39,7 @@ class EpisodioSeeder extends Seeder
                 'numero' => 1,
                 'titulo' => 'The Vanishing of Will Byers',
                 'duracion' => 49,
+                'video' => 'cap1st.mp4',
                 'sinopsis' => 'Un niño desaparece misteriosamente en Hawkins.',
                 'created_at' => now(),
                 'updated_at' => now()

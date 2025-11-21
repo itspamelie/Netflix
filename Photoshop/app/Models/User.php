@@ -6,8 +6,11 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+//poner en el modelo user
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+//Agregar el implements al usuario
+class User extends Authenticatable implements JWTSubject
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
@@ -21,6 +24,11 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'phone',
+        'role',
+        'img',
+        'suscripcion_id',
+        'estatus_suscripcion'
     ];
 
     /**
@@ -44,5 +52,26 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+     //INNER JOIN CON SUSCRIPCION_ID
+    public function  suscripcion(){
+        return $this->hasOne(Suscripcion::class,'id','suscripcion_id');
+    }
+
+    //FUNCIONES PEGADAS
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    /**
+     * Return a key value array, containing any custom claims to be added to the JWT.
+     *
+     * @return array
+     */
+    public function getJWTCustomClaims()
+    {
+        return [];
     }
 }

@@ -13,7 +13,7 @@ class MiListaSeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('miLista')->insert([
+        DB::table('listas')->insert([
 
             // ===============================================
             // David (user_id = 1) quiere ver más tarde:

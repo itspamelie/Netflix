@@ -17,16 +17,23 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
-        UserSeeder::class,
+       // Prerequisitos
+        SuscripcionSeeder::class, // primero para que UsersSeeder funcione
+        ImgSeeder::class,
         GeneroSeeder::class,
+        ClasificacionSeeder::class,
+        // Tablas principales
+        UserSeeder::class,
+        DatosPagosSeeder::class,
+        PerfilesSeeder::class,
         ContenidoSeeder::class,
         TemporadaSeeder::class,
-        EpisodioSeeder::class,
+        EpisodioSeeder::class, 
+        // Tablas sin dependencias de FK
+        AnunciosSeeder::class, 
+        // Tablas de relación/transaccionales
+        MiListaSeeder::class,
         HistorialSeeder::class,
-        MilistaSeeder::class,
-        ClasificacionSeeder::class,
-        PerfilesSeeder::class,
-        ImgSeeder::class,
     ]);
 
     }
