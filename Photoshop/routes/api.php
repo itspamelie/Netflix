@@ -37,4 +37,5 @@ Route::resource('subscriptions', SuscripcionesController::class);
 Route::resource('seasons', TemporadasController::class);
 Route::resource('users', UsersController::class);
 
+
 });

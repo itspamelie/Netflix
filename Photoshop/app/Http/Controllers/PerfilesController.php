@@ -14,8 +14,8 @@ class PerfilesController extends Controller
      */
     public function index()
     {
-       
-         $data = Perfil::with(['user','img'])->get();
+    $data = Perfil::with(['user','img'])
+                  ->get();
         //Siempre que hagamos una api enviamos un JSON
         return response()->json([
             "status"=>"ok",
@@ -42,6 +42,8 @@ class PerfilesController extends Controller
             'img_id'=>'required',
             'tipo_cuenta'=>'required|string|min:2'
         ]);
+
+        
         $data = Perfil::create($validated);
           return response()->json([
             "status"=>"ok",
@@ -56,9 +58,10 @@ class PerfilesController extends Controller
      */
     public function show(string $id)
     {
-         $data = Perfil::with(['user', 'img'])
-                             ->find($id);
-                              if($data){
+           $data = Perfil::with(['user','img'])
+           ->where('user_id',$id)
+           ->get();
+           if($data){
             return response()->json([
             "status"=>"ok",
             "mesage"=>"Perfil encontrado.",
@@ -114,4 +117,7 @@ class PerfilesController extends Controller
             "mesage"=>"Perfil eliminado correctamente."
         ]);
     }
+    
+
+
 }

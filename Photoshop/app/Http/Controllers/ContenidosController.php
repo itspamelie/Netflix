@@ -33,28 +33,50 @@ class ContenidosController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-         $validated = $request->validate([
-            'titulo'=>'required|string|min:2',
-            'descripcion'=>'required|string|min:2',
-            'tipo'=>'required|string|min:2',
-            'fechaEstreno'=>'required',
-            'duracion'=>'required|numeric',
-            'portada'=>'required|string',
-            'video'=>'required|string',
-            'genero_id'=>'required',
-            'clasificacion_id'=>'required'
-        ]);
+public function store(Request $request)
+{
+    $validated = $request->validate([
+        'titulo'=>'required|string|min:2',
+        'descripcion'=>'required|string|min:2',
+        'tipo'=>'required|string|min:2',
+        'fechaEstreno'=>'required|date',
+        'duracion'=>'required|numeric',
+        'portada'=>'nullable|image',
+        'video' => 'required|file',
+        'genero_id'=>'required',
+        'clasificacion_id'=>'required'
+    ]);
 
-        $data = Contenido::create($validated);
-          return response()->json([
-            "status"=>"ok",
-            "mesage"=>"Contenido insertado correctamente.",
-            "data"=>$data
+    // === GUARDAR PORTADA ===
+    if ($request->hasFile('portada')) {
+        $img = $request->file('portada');
+        $imgName = uniqid() . '.' . $img->getClientOriginalExtension();
 
-        ]);
+        $img->move(public_path('portadas/'), $imgName);
+
+        $validated['portada'] = $imgName;
     }
+
+    // === GUARDAR VIDEO ===
+    if ($request->hasFile('video')) {
+        $video = $request->file('video');
+        $videoName = uniqid() . '.' . $video->getClientOriginalExtension();
+
+        $video->move(public_path('contents/'), $videoName);
+
+        // Agregar el nombre del video al array validado
+        $validated['video'] = $videoName;
+    }
+
+    // Crear registro
+    $data = Contenido::create($validated);
+
+    return response()->json([
+        "status" => "ok",
+        "message" => "Contenido insertado correctamente.",
+        "data" => $data
+    ]);
+}
 
     /**
      * Display the specified resource.
@@ -94,20 +116,60 @@ class ContenidosController extends Controller
             'tipo'=>'required|string|min:2',
             'fechaEstreno'=>'required',
             'duracion'=>'required|numeric',
-            'portada'=>'required|string',
-            'video'=>'required|string',
+            'portada'=>'nullable|image|mimes: jpeg,png,jpg,gif,webp|max:5120',
+            'video'=>'nullable|file',
             'genero_id'=>'required',
             'clasificacion_id'=>'required'
         ]);
 
          $data = Contenido::findOrFail($id);
-         $data->update($validated);
-         return response()->json([
-            "status"=>"ok",
-            "mesage"=>"Contenido actualizado correctamente.",
-            "data"=>$data
+       
+if ($request->hasFile('portada')) {
 
-        ]);
+        // Borrar portada anterior
+        if ($data->portada && file_exists(public_path('portadas/' . $data->portada))) {
+            unlink(public_path('portadas/' . $data->portada));
+        }
+
+        // Guardar nueva portada
+        $img = $request->file('portada');
+        $imgName = uniqid() . '.' . $img->getClientOriginalExtension();
+        $img->move(public_path('portadas/'), $imgName);
+
+        $validated['portada'] = $imgName;
+    } else {
+        unset($validated['portada']);
+    }
+
+
+    //Si viene nuevo archivo de video
+    if ($request->hasFile('video')) {
+
+        // Borrar el video anterior
+        if ($data->video && file_exists(public_path('contents/' . $data->video))) {
+            unlink(public_path('contents/' . $data->video));
+        }
+        // Guardar nuevo archivo
+        $file = $request->file('video');
+        $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+        $file->move(public_path('contents/'), $filename);
+
+        // Reemplazar en BD
+        $validated['video'] = $filename;
+    }
+
+    // Si no se mandó video, no se sobreescribe el campo
+    else {
+        unset($validated['video']);
+    }
+
+    $data->update($validated);
+
+    return response()->json([
+        "status" => "ok",
+        "mesage" => "Contenido actualizado correctamente.",
+        "data" => $data
+    ]);
     }
 
     /**
@@ -116,9 +178,23 @@ class ContenidosController extends Controller
     public function destroy(string $id)
     {
           $data = Contenido::find($id);
-        if($data){
-            $data->delete();
+       
+
+    if ($data) {
+
+        // Borrar video
+        if ($data->video && file_exists(public_path('contents/' . $data->video))) {
+            unlink(public_path('contents/' . $data->video));
         }
+
+        // Borrar portada
+        if ($data->portada && file_exists(public_path('portadas/' . $data->portada))) {
+            unlink(public_path('portadas/' . $data->portada));
+        }
+
+        $data->delete();
+    }
+
         return response()->json([
             "status"=>"ok",
             "mesage"=>"Contenido eliminado correctamente."

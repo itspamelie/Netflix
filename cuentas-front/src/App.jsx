@@ -1,35 +1,40 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
+import {Router,Route,Routes, BrowserRouter} from 'react-router-dom'
+import Login from './views/login'
+import Home from './views/home'
+import Index from './views/index'
+import Browse from './views/browse'
+import Play from './views/play'
+import Dashboard from './views/dashboard'
+import MainDashboard from './views/MainDashboard'
+import SuscriptionsDashboard from './views/SuscriptionsDashboard'
+import SeriesDashboard from './views/SeriesDashboard'
+import ProfilesDashboard from './views/ProfilesDashboard'
+import IconsDashboard from './views/IconsDashboard'
+import GenresDashboard from './views/GenresDashboard'
+import ContentsDashboard from './views/ContentsDashboard'
+import AdsDashboard from './views/AdsDashboard'
 
-function App() {
-  const [count, setCount] = useState(0)
-
+export default function App(){
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home/>}/>
+        <Route path="/login" element={<Login/>}/>
+        <Route path="/index" element={<Index/>}/>
+        <Route path='/browse' element={<Browse/>} />
+        <Route path='/play' element={<Play/>} />
+        <Route path="/dashboard" element={<Dashboard/>}>
+        <Route index element={<MainDashboard/>}/>
+        <Route path="suscriptions" element={<SuscriptionsDashboard/>}/>
+        <Route path="series" element={<SeriesDashboard/>}/>
+        <Route path="profiles" element={<ProfilesDashboard/>}/>
+        <Route path="icons" element={<IconsDashboard/>}/>
+        <Route path="genres" element={<GenresDashboard/>}/>
+        <Route path="contents" element={<ContentsDashboard/>}/>
+        <Route path="ads" element={<AdsDashboard/>}/>
+        </Route>
+      </Routes>
+    </BrowserRouter>
   )
 }
-
-export default App

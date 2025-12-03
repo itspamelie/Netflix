@@ -33,24 +33,36 @@ class EpisodiosController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'titulo'=>'required|string|min:2',
-            'numero'=>'required|numeric',
-            'duracion'=>'required|numeric',
-            'sinopsis'=>'required|string|min:2',
-            'video'=>'required|string|min:2',
-            'temporada_id'=>'required',
-            'contenido_id'=>'required']);
-        $data = Episodio::create($validated);
-          return response()->json([
-            "status"=>"ok",
-            "mesage"=>"Episodio ingresado correctamente.",
-            "data"=>$data
+public function store(Request $request)
+{
+    $validated = $request->validate([
+        'titulo'=>'required|string|min:2',
+        'numero'=>'required|numeric',
+        'duracion'=>'required|numeric',
+        'sinopsis'=>'required|string|min:2',
+        'video' => 'required|file',
+        'temporada_id'=>'required',
+        'contenido_id'=>'required'
+    ]);
 
-        ]);
-    }
+    // Guarda el video
+    $file = $request->file('video');
+    $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+    $file->move(public_path('episodes/'), $filename);
+
+    // Guardamos el nombre del archivo en validated
+    $validated['video'] = $filename;
+
+    // Crear episodio
+    $data = Episodio::create($validated);
+
+    return response()->json([
+        "status" => "ok",
+        "mesage" => "Episodio insertado correctamente.",
+        "data" => $data
+    ]);
+}
+
 
     /**
      * Display the specified resource.
@@ -90,17 +102,38 @@ class EpisodiosController extends Controller
             'numero'=>'required|numeric',
             'duracion'=>'required|numeric',
             'sinopsis'=>'required|string|min:2',
-            'video'=>'required|string|min:2',
+            'video'=>'required|file|mimetypes:video/mp4,video/avi,video/mpeg,video/quicktime|max:51200',
             'temporada_id'=>'required',
             'contenido_id'=>'required']);
          $data = Episodio::findOrFail($id);
-        $data->update($validated);
-          return response()->json([
-            "status"=>"ok",
-            "mesage"=>"Datos de Episodio actualizados correctamente.",
-            "data"=>$data
+   //Si viene nuevo archivo de video
+    if ($request->hasFile('video')) {
 
-        ]);
+        // Borrar el video anterior
+        if ($data->video && file_exists(public_path('episodes/' . $data->video))) {
+            unlink(public_path('episodes/' . $data->video));
+        }
+        // Guardar nuevo archivo
+        $file = $request->file('video');
+        $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+        $file->move(public_path('episodes/'), $filename);
+
+        // Reemplazar en BD
+        $validated['video'] = $filename;
+    }
+
+    // Si no se mandó video, no se sobreescribe el campo
+    else {
+        unset($validated['video']);
+    }
+
+    $data->update($validated);
+
+    return response()->json([
+        "status" => "ok",
+        "mesage" => "Episodio actualizado correctamente.",
+        "data" => $data
+    ]);
     }
 
     /**
@@ -109,9 +142,16 @@ class EpisodiosController extends Controller
     public function destroy(string $id)
     {
          $data = Episodio::find($id);
-        if($data){
-            $data->delete();
+        if ($data) {
+
+        // Borrar video del servidor
+        if ($data->video && file_exists(public_path('episodes/' . $data->video))) {
+            unlink(public_path('episodes/' . $data->video));
         }
+
+        $data->delete();
+    }
+
         return response()->json([
             "status"=>"ok",
             "mesage"=>"Episodio eliminado correctamente."

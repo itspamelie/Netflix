@@ -15,11 +15,11 @@ class ImgSeeder extends Seeder
     public function run(): void
     {
          DB::table('imgs')->insert([
-            ['nombre' => 'Avatar Rojo', 'img' => 'avatar_rojo.png'],
-            ['nombre' => 'Avatar Azul', 'img' => 'avatar_azul.png'],
+            ['nombre' => 'Avatar Rojo', 'img' => 'avatar_rojo.jpg'],
+            ['nombre' => 'Avatar Azul', 'img' => 'avatar_azul.jpg'],
             ['nombre' => 'Avatar Verde', 'img' => 'avatar_verde.png'],
-            ['nombre' => 'Avatar Amarillo', 'img' => 'avatar_amarillo.png'],
-            ['nombre' => 'Avatar Morado', 'img' => 'avatar_morado.png']
+            ['nombre' => 'Avatar Amarillo', 'img' => 'avatar_amarillo.jpg'],
+            ['nombre' => 'Avatar Morado', 'img' => 'avatar_morado.jpg']
         ]);
     }
 }

@@ -15,7 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         //dar de alta
-        $middleware->alias(["jwt"=>JwtMiddleware::class]);
+    $middleware->append(\Illuminate\Http\Middleware\HandleCors::class);
+    $middleware->alias(["jwt"=>JwtMiddleware::class]);        
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

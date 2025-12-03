@@ -38,8 +38,14 @@ class ImgsController extends Controller
         //nombre img
         $validated = $request->validate([
             'nombre'=>'required|string|min:2',
-            'img'=>'required|string|min:2'
+            'img'=>'nullable|image|mimes: jpeg,png,jpg,gif,webp|max:5120'
         ]);
+
+$file = $request->file('img');
+$filename = uniqid() . '.' . $file->getClientOriginalExtension();
+$file->move(public_path('profilepictures/'), $filename);
+
+
         $data = Img::create($validated);
           return response()->json([
             "status"=>"ok",
@@ -87,12 +93,33 @@ class ImgsController extends Controller
             'img'=>'required|string|min:2'
         ]);
           $data = Img::findOrFail($id);
-        $data->update($validated);
-          return response()->json([
-            "status"=>"ok",
-            "mesage"=>"Imagen actualizada correctamente.",
-            "data"=>$data
-        ]);
+           //Si viene nuevo archivo
+    if ($request->hasFile('img')) {
+
+        // Borrar el anterior
+        if ($data->img && file_exists(public_path('contents/' . $data->img))) {
+            unlink(public_path('profilepictures/' . $data->img));
+        }
+        // Guardar nuevo archivo
+        $file = $request->file('img');
+        $filename = uniqid() . '.' . $file->getClientOriginalExtension();
+        $file->move(public_path('profilepictures/'), $filename);
+
+        // Reemplazar en BD
+        $validated['img'] = $filename;
+    }
+
+    else {
+        unset($validated['img']);
+    }
+
+    $data->update($validated);
+
+    return response()->json([
+        "status" => "ok",
+        "mesage" => "Imagen actualizada correctamente.",
+        "data" => $data
+    ]);
     }
 
     /**
@@ -101,9 +128,16 @@ class ImgsController extends Controller
     public function destroy(string $id)
     {
          $data = Img::find($id);
-        if($data){
-            $data->delete();
+         if ($data) {
+
+        // Borrar imagren del servidor
+        if ($data->img && file_exists(public_path('profilepictures/' . $data->img))) {
+            unlink(public_path('profilepictures/' . $data->imh));
         }
+
+        $data->delete();
+    }
+
         return response()->json([
             "status"=>"ok",
             "mesage"=>"Imagen eliminada correctamente."

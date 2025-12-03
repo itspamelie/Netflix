@@ -43,7 +43,6 @@ class SuscripcionesController extends Controller
          $validated = $request->validate([
             'nombre'=>'required|string|min:2',
             'descripcion'=>'required|string|min:2',
-            'user_id'=>'required',
             'cantidad_perfiles'=>'required|numeric',
             'costo_mensual'=>'required|numeric',
             'fecha_pagos'=>'required'
@@ -92,7 +91,6 @@ class SuscripcionesController extends Controller
          $validated = $request->validate([
             'nombre'=>'required|string|min:2',
             'descripcion'=>'required|string|min:2',
-            'user_id'=>'required',
             'cantidad_perfiles'=>'required|numeric',
             'costo_mensual'=>'required|numeric',
             'fecha_pagos'=>'required'
