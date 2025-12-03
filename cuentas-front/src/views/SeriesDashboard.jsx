@@ -148,6 +148,87 @@ export default function SeriesDashboard() {
         }
     };
 
+
+
+        // Modal para nueva temporada + capítulo
+    const [showNewSeasonModal, setShowNewSeasonModal] = useState(false);
+    const [newSeasonForm, setNewSeasonForm] = useState({
+        numero: "",
+        titulo: "",
+        // Capítulo inicial
+        capituloTitulo: "",
+        capituloNumero: "",
+        capituloDuracion: "",
+        capituloSinopsis: "",
+        capituloVideo: null
+    });
+    const [selectedContentId, setSelectedContentId] = useState(null);
+
+   // --- Funciones para nueva temporada + capítulo ---
+    const handleOpenNewSeasonModal = (contenidoId) => {
+        setSelectedContentId(contenidoId);
+        setNewSeasonForm({
+            numero: "",
+            titulo: "",
+            capituloTitulo: "",
+            capituloNumero: "",
+            capituloDuracion: "",
+            capituloSinopsis: "",
+            capituloVideo: null
+        });
+        setShowNewSeasonModal(true);
+    };
+
+    const handleNewSeasonChange = (e) => {
+        const { name, value, files } = e.target;
+        setNewSeasonForm(prev => ({ ...prev, [name]: files ? files[0] : value }));
+    };
+
+    const handleNewSeasonSubmit = async (e) => {
+        e.preventDefault();
+        if (!selectedContentId) return;
+
+        try {
+            // 1️⃣ Crear la temporada
+            const seasonRes = await fetch("http://localhost:8000/api/seasons", {
+                method: "POST",
+                headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    contenido_id: selectedContentId,
+                    numero: newSeasonForm.numero,
+                    titulo: newSeasonForm.titulo
+                })
+            });
+            const seasonData = await seasonRes.json();
+            if (!seasonRes.ok) { alert("Error al crear temporada"); return; }
+
+            const temporadaId = seasonData.data.id;
+
+            // 2️⃣ Crear capítulo inicial
+            const fd = new FormData();
+            fd.append("titulo", newSeasonForm.capituloTitulo);
+            fd.append("numero", newSeasonForm.capituloNumero);
+            fd.append("duracion", newSeasonForm.capituloDuracion);
+            fd.append("sinopsis", newSeasonForm.capituloSinopsis);
+            fd.append("video", newSeasonForm.capituloVideo);
+            fd.append("temporada_id", temporadaId);
+            fd.append("contenido_id", selectedContentId);
+
+            const capRes = await fetch("http://localhost:8000/api/episodes", {
+                method: "POST",
+                headers: { Authorization: `Bearer ${token}`, Accept: "application/json" },
+                body: fd
+            });
+
+            if (!capRes.ok) { alert("Error al crear capítulo inicial"); return; }
+
+            alert("Temporada y capítulo creados correctamente");
+            setShowNewSeasonModal(false);
+            fetchEpisodes();
+        } catch (err) { console.error(err); alert("Error en la petición"); }
+    };
+
+
     return (
         <>
             <div className="d-flex justify-content-between align-items-center">
@@ -175,10 +256,12 @@ export default function SeriesDashboard() {
                                         {ep.numero}. {ep.titulo} ({ep.duracion} min)
                                     </ListGroup.Item>
                                 ))}
-                                <ListGroup.Item>
+                                <ListGroup.Item className='d-flex justify-content-between'>
                                     <Button variant="danger" onClick={() => handleOpenEpisodeModal(temp)}>
                                         Agregar capítulo
                                     </Button>
+    <Button variant="dark" onClick={() => handleOpenNewSeasonModal(serieName.id)}>Agregar Temporada</Button>
+
                                 </ListGroup.Item>
                             </ListGroup>
                         </Card>
@@ -196,9 +279,8 @@ export default function SeriesDashboard() {
                         <Card.Title>{s.titulo}</Card.Title>
                         <Card.Text>Sin episodios aún</Card.Text>
                         <Card.Text>
-                            <button className="btn btn-danger" type="button">
-                                Agregar Nueva Temporada
-                            </button>
+    <Button variant="danger" onClick={() => handleOpenNewSeasonModal(s.id)}>Agregar Nueva Temporada</Button>
+
                         </Card.Text>
                     </Card.Body>
                 </Card>
@@ -262,6 +344,52 @@ export default function SeriesDashboard() {
                             />
                         </Form.Group>
                         <Button variant="danger" type="submit">Agregar Capítulo</Button>
+                    </Form>
+                </Modal.Body>
+            </Modal>
+
+
+               {/* Modal para nueva temporada + capítulo */}
+            <Modal show={showNewSeasonModal} onHide={() => setShowNewSeasonModal(false)}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Agregar Nueva Temporada + Capítulo</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form onSubmit={handleNewSeasonSubmit}>
+                        <h5>Temporada</h5>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Número</Form.Label>
+                            <Form.Control type="number" name="numero" value={newSeasonForm.numero} onChange={handleNewSeasonChange} required />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Título</Form.Label>
+                            <Form.Control type="text" name="titulo" value={newSeasonForm.titulo} onChange={handleNewSeasonChange} required />
+                        </Form.Group>
+
+                        <hr />
+                        <h5>Primer Capítulo</h5>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Título</Form.Label>
+                            <Form.Control type="text" name="capituloTitulo" value={newSeasonForm.capituloTitulo} onChange={handleNewSeasonChange} required />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Número</Form.Label>
+                            <Form.Control type="number" name="capituloNumero" value={newSeasonForm.capituloNumero} onChange={handleNewSeasonChange} required />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Duración (min)</Form.Label>
+                            <Form.Control type="number" name="capituloDuracion" value={newSeasonForm.capituloDuracion} onChange={handleNewSeasonChange} required />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Sinopsis</Form.Label>
+                            <Form.Control type="text" name="capituloSinopsis" value={newSeasonForm.capituloSinopsis} onChange={handleNewSeasonChange} required />
+                        </Form.Group>
+                        <Form.Group className="mb-3">
+                            <Form.Label>Video</Form.Label>
+                            <Form.Control type="file" name="capituloVideo" accept="video/*" onChange={handleNewSeasonChange} required />
+                        </Form.Group>
+
+                        <Button variant="danger" type="submit">Crear Temporada y Capítulo</Button>
                     </Form>
                 </Modal.Body>
             </Modal>

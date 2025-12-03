@@ -15,7 +15,6 @@ export default function HeaderDashboard(){
         <li className="nav-item"><a className="nav-link text-light" href="/dashboard/contents">Contents</a></li>
         <li className="nav-item"><a className="nav-link text-light" href="/dashboard/series">Series</a></li>
         <li className="nav-item"><a className="nav-link text-light" href="/dashboard/icons">Icons</a></li>
-        <li className="nav-item"><a className="nav-link text-light" href="/dashboard/profiles">Profiles</a></li>
         <li className="nav-item"><a className="nav-link text-light" href="/dashboard/ads">Ads</a></li>
         <li className="nav-item"><a className="nav-link text-light" href="/dashboard/genres">Genres/classifications</a></li>
       </ul>
