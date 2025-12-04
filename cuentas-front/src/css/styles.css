@@ -1,10 +1,13 @@
+/* ---------------------------------- */
+/* 1. Variables globales */
+/* ---------------------------------- */
+
 .root {
     --primary: #db202c;
     --error: orangered;
     --font-color: #989897;
     --border-radius: 5px;
 }
-
 
 .all {
     box-sizing: border-box;
@@ -18,22 +21,32 @@
     opacity: 1;
 }
 
+/* ---------------------------------- */
+/* 2. Fondo general del login */
+/* ---------------------------------- */
+
 .body-login {
     margin: 0;
     width: 100vw;
-    min-height: 1050px;
-    position: relative;
+    min-height: 100vh;
+
+    display: flex;
+    flex-direction: column;   /* 🔥 Apilar login y footer */
+    justify-content: space-between; /* 🔥 Footer AL FONDO */
+    
     background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
         linear-gradient(to top, rgba(0, 0, 0, 0) 90%, rgba(0, 0, 0, 0.5)),
-        url(https://i.postimg.cc/NjHjKtG4/US-en-20190128-popsignuptwoweeks-perspective-alpha-website-large.jpg);
-    background-position: center center;
+        url("https://i.postimg.cc/NjHjKtG4/US-en-20190128-popsignuptwoweeks-perspective-alpha-website-large.jpg");
+
+    background-position: center;
     background-size: cover;
     background-repeat: no-repeat;
 }
 
+
 .a-special {
     cursor: pointer;
-     text-decoration: underline;
+    text-decoration: underline;
     color: white;
 }
 
@@ -42,153 +55,127 @@
     color: white;
 }
 
+/* ---------------------------------- */
+/* 3. Wrapper general */
+/* ---------------------------------- */
+
 .wrapper {
-    height: 100%;
     width: 100%;
+    max-width: 100%;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
+/* HEADER LOGO */
+
 .header {
     width: 100%;
     padding: 20px 40px;
+    text-align: center;
 }
 
-/* Regla del SCSS: .header svg */
 .header svg {
     width: 160px;
 }
 
 /* ---------------------------------- */
-/* 3. Estilos de Login y Formulario */
+/* 4. Caja del login */
 /* ---------------------------------- */
+
 .login {
     width: 425px;
-    height: 650px;
-    flex-shrink: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    padding: 40px 0;
     background: rgba(0, 0, 0, 0.7);
-    border-radius: var(--border-radius); /* Usando variable CSS */
+    border-radius: var(--border-radius);
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
 }
 
-/* Regla del SCSS: .login .signin-form */
 .login .signin-form {
-    margin-top: 30px;
+    margin-top: 20px;
     width: 70%;
     position: relative;
-    height: 100%;
 }
 
-/* Regla del SCSS: .login .signin-form .title */
 .login .signin-form .title {
     color: white;
+    font-size: 30px;
+    margin-bottom: 20px;
 }
 
-/* Regla del SCSS: .login .signin-form .signin-btn */
+/* Botón iniciar sesión */
+
 .login .signin-form .signin-btn {
     margin-top: 30px;
     width: 100%;
     padding: 13px 0;
-    border-radius: var(--border-radius); /* Usando variable CSS */
+    border-radius: var(--border-radius);
     border: none;
-    background: var(--primary); /* Usando variable CSS */
+    background: var(--primary);
     color: white;
     font-weight: bold;
     font-size: 16px;
     cursor: pointer;
 }
 
-/* Regla del SCSS: .login .signin-form .action-group */
+/* Grupo Remember me */
+
 .login .signin-form .action-group {
     margin-top: 8px;
     width: 100%;
     display: flex;
     justify-content: space-between;
-    color: var(--font-color); /* Usando variable CSS */
+    color: var(--font-color);
     font-size: 13px;
 }
 
-/* Regla del SCSS: .login .signin-form .action-group input */
 .login .signin-form .action-group input {
     transform: scale(1.2);
-    padding: 10px;
 }
 
-/* Regla del SCSS: .login .signin-form .onboarding */
+/* Onboarding debajo del formulario */
+
 .login .signin-form .onboarding {
-    bottom: 0;
-    margin-bottom: 50px;
-    position: absolute;
-    color: var(--font-color); /* Usando variable CSS */
+    margin-top: 35px;
+    color: var(--font-color);
 }
 
-/* Regla del SCSS: .login .signin-form .onboarding div */
 .login .signin-form .onboarding div {
     display: flex;
     align-items: center;
 }
 
-/* Regla del SCSS: .login .signin-form .onboarding div .icon */
-.login .signin-form .onboarding div .icon {
-    display: flex;
-}
-
-/* Regla del SCSS: .login .signin-form .onboarding div .icon svg */
 .login .signin-form .onboarding div .icon svg {
     width: 20px;
     height: 20px;
 }
 
-/* Regla del SCSS: .login .signin-form .onboarding div small */
-.login .signin-form .onboarding div small {
-    padding-left: 5px;
-}
-
-/* Regla del SCSS: .login .signin-form .onboarding p */
 .login .signin-form .onboarding p {
-    margin: 10px 0 0 0;
-    display: block;
+    margin-top: 10px;
 }
 
-/* Regla del SCSS: .login .signin-form .onboarding a */
-.login .signin-form .onboarding a {
-    color: white;
-}
+/* ---------------------------------- */
+/* 5. Inputs con floating label */
+/* ---------------------------------- */
 
 .field {
     position: relative;
 }
 
-/* Regla del SCSS: .field input */
 .field input {
-    background: #333333;
+    background: #333;
     color: white;
     font-size: 14px;
     width: 100%;
     height: 45px;
     margin: 5px 0;
     border: none;
-    border-radius: var(--border-radius); /* Usando variable CSS */
+    border-radius: var(--border-radius);
     padding: 15px 0 0 20px;
     outline: none;
-}
-
-/* Regla del SCSS: .field input:focus ~ .floating-label, .field input:not(:focus):valid ~ .floating-label */
-.field input:focus ~ .floating-label,
-.field input:not(:focus):valid ~ .floating-label {
-    /* Aquí se copia el contenido del placeholder %floating-label-active */
-    top: 8px;
-    left: 20px;
-    font-size: 11px;
-    opacity: 1;
-}
-
-/* Regla del SCSS: .field input.invalid */
-.field input.invalid {
-    border-bottom: 2px solid var(--error); /* Usando variable CSS */
 }
 
 .floating-label {
@@ -197,49 +184,59 @@
     left: 20px;
     top: 18px;
     transition: 0.2s ease all;
-    color: var(--font-color); /* Usando variable CSS */
+    color: var(--font-color);
+}
+
+.field input:focus ~ .floating-label,
+.field input:not(:focus):valid ~ .floating-label {
+    top: 8px;
+    left: 20px;
+    font-size: 11px;
+    opacity: 1;
 }
 
 .error-message {
-    color: var(--error); /* Usando variable CSS */
-    margin: 0;
+    color: var(--error);
     font-size: 13px;
-    width: 100%;
 }
 
 /* ---------------------------------- */
-/* 4. Estilos de Footer */
+/* 6. Footer */
 /* ---------------------------------- */
+
 .footer {
-    position: absolute;
-    bottom: 0;
-    height: 220px;
+    margin-top: 40px;
     width: 100%;
-    flex-shrink: 0;
     background: rgba(0, 0, 0, 0.84);
     padding: 20px 30px;
-    color: var(--font-color); /* Usando variable CSS */
+    color: var(--font-color);
+    border-radius: var(--border-radius);
+    justify-content: center;
+    align-items: center;
 }
 
-/* Regla del SCSS: .footer .terms */
 .footer .terms {
-    margin-top: 30px;
+    margin-top: 20px;
+    justify-content: center;
+    align-items: center;
 }
 
-/* Regla del SCSS: .footer .terms a */
 .footer .terms a {
     font-size: 12px;
     padding-right: 100px;
+    justify-content: center;
+    align-items: center;
 }
 
-/* Regla del SCSS: .footer select */
 .footer select {
-    margin-top: 30px;
+    margin-top: 20px;
     height: 40px;
     background: black;
-    border: 1px solid var(--font-color); /* Usando variable CSS */
-    color: var(--font-color); /* Usando variable CSS */
+    border: 1px solid var(--font-color);
+    color: var(--font-color);
     outline: none;
-    border-radius: var(--border-radius); /* Usando variable CSS */
+    border-radius: var(--border-radius);
     padding: 10px 20px;
+    justify-content: center;
+    align-items: center;
 }
