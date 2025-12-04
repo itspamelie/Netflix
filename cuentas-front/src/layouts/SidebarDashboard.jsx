@@ -1,9 +1,14 @@
+import { Link } from "react-router-dom";
+import '../css/dashboardsidebar.css';
+
+
 export default function HeaderDashboard() {
   return (
     <>
       <nav className="col-md-2 d-none d-md-block bg-black min-vh-100 p-3">
-        
-        <img 
+
+        {/* LOGO */}
+        <img
           src="https://github.com/Chinemereem/Netflix-clone/blob/master/images/netflix%20logo.png?raw=true"
           alt="Logo de Netflix"
           className="logo mb-4"
@@ -11,48 +16,61 @@ export default function HeaderDashboard() {
 
         <ul className="nav flex-column">
 
+          {/* PANEL PRINCIPAL */}
           <li className="nav-item">
-            <a className="nav-link text-light bg-secondary rounded mb-1" href="/dashboard">
+            <Link className="nav-link text-light bg-secondary rounded mb-1" to="/dashboard">
               Panel Principal
-            </a>
+            </Link>
           </li>
 
+          {/* SUSCRIPCIONES */}
           <li className="nav-item">
-            <a className="nav-link text-light" href="/dashboard/suscriptions">
+            <Link className="nav-link text-light" to="/dashboard/suscriptions">
               Suscripciones
-            </a>
+            </Link>
           </li>
 
+          {/* CONTENIDOS */}
           <li className="nav-item">
-            <a className="nav-link text-light" href="/dashboard/contents">
+            <Link className="nav-link text-light" to="/dashboard/contents">
               Contenidos
-            </a>
+            </Link>
           </li>
 
+          {/* SERIES */}
           <li className="nav-item">
-            <a className="nav-link text-light" href="/dashboard/series">
+            <Link className="nav-link text-light" to="/dashboard/series">
               Series
-            </a>
+            </Link>
           </li>
 
+          {/* ICONOS */}
           <li className="nav-item">
-            <a className="nav-link text-light" href="/dashboard/icons">
+            <Link className="nav-link text-light" to="/dashboard/icons">
               Íconos
-            </a>
+            </Link>
           </li>
 
+          {/* PUBLICIDAD */}
           <li className="nav-item">
-            <a className="nav-link text-light" href="/dashboard/ads">
+            <Link className="nav-link text-light" to="/dashboard/ads">
               Publicidad
-            </a>
+            </Link>
           </li>
 
+          {/* GENEROS */}
           <li className="nav-item">
-            <a className="nav-link text-light" href="/dashboard/genres">
+            <Link className="nav-link text-light" to="/dashboard/genres">
               Géneros / Clasificaciones
-            </a>
+            </Link>
           </li>
 
+          {/* IR AL HOME */}
+          <li className="nav-item">
+            <Link className="nav-link text-light" to="/">
+              Ir al Home
+            </Link>
+          </li>
         </ul>
       </nav>
     </>
