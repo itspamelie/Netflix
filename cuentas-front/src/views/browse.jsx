@@ -1,13 +1,110 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import '../css/browse.css';
-// Importa íconos de Font Awesome o similar, o cámbialos por SVG
-// import { FaFacebookSquare, FaInstagram, FaYoutube } from 'react-icons/fa'; 
 
 export default function Browse() {
-    // 1. Declaración de variables de estado con useState
+
     const [isBrowseOpen, setIsBrowseOpen] = useState(false);
     const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+    const [contents, setContents] = useState([]);
+    const [episodes, setEpisodes] = useState([]);
+
+        // Guardar temporada seleccionada por cada serie
+    const [selectedContent, setSelectedContent] = useState(null);
+const [selectedSeason, setSelectedSeason] = useState(null);
+const [selectedEpisode, setSelectedEpisode] = useState(null);
+
+    const token = localStorage.getItem("token");
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    const fetchContents = async () => {
+        if (!token) return;
+        try {
+            const res = await fetch("http://localhost:8000/api/content", {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            const data = await res.json();
+            if (res.ok) setContents(data.data);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+        const fetchEpisodes = async () => {
+        try {
+            const res = await fetch("http://localhost:8000/api/episodes", {
+                headers: { Authorization: `Bearer ${token.replace(/"/g, "")}` }
+            });
+            const data = await res.json();
+            if (res.ok) {
+                const seriesOnly = data.data.filter(ep => ep.contenido?.tipo === "serie");
+                setEpisodes(seriesOnly);
+
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    };
+
+
+
+    useEffect(() => {
+        if (!token || !user) {
+            navigate("/login"); // ✅ ahora sí está definida
+            return;
+        }
+        fetchEpisodes();
+        fetchContents();
+    }, [token, user]); 
+
+    // Dentro del componente Browse, después de fetchContents y de definir contents
+const latestContent = contents.length > 0 
+  ? contents.reduce((prev, current) => 
+      new Date(prev.created_at) > new Date(current.created_at) ? prev : current
+    )
+  : null;
+
+  // Top 5 más recientes
+const top5 = contents
+  .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+  .slice(0, 5);
+
+
+const openSeriesModal = (serie) => {
+    const eps = episodes.filter(e => e.contenido_id === serie.id);
+
+ const grouped = eps.reduce((acc, ep) => {
+    const temporada = ep.temporada?.numero; // ← AQUÍ EL FIX
+
+    if (!temporada) return acc; // seguridad
+
+    if (!acc[temporada]) acc[temporada] = [];
+    acc[temporada].push(ep);
+
+    return acc;
+}, {});
+
+    setSelectedContent({
+        ...serie,
+        grouped,
+    });
+
+
+
+    // seleccionar temporada 1 por defecto
+    const firstSeason = Math.min(...Object.keys(grouped).map(Number));
+    setSelectedSeason(firstSeason);
+
+    // no episodio seleccionado
+    setSelectedEpisode(null);
+
+    const modal = new bootstrap.Modal(document.getElementById("seriesModal"));
+    modal.show();
+};
+
+
     return(
     <>
 <div className="body-browse">
@@ -19,14 +116,13 @@ export default function Browse() {
             className="logo" 
           />
           
-          <div className="dropdown" onClick={() => setIsBrowseOpen(!isBrowseOpen)}>
+          <div className="dropdown" >
             <span className="browse-el">Browse</span>
             <div className="dropdown-content" >
-              <p>Home</p>
-              <p><a href="#dramas" className='a-browse'>Tv shows</a></p>
-              <p>Movies</p>
-              <p><a href="#top-tv" className='a-browse'>News &amp; popular</a></p>
-              <p><a href="#list" className='a-browse'>My List</a></p>
+              <p><a href="#" className='a-browse'>Inicio</a></p>
+              <p><a href="#dramas" className='a-browse'>Películas</a></p>
+              <p><a href="#top-tv" className='a-browse'>Top &amp; populares</a></p>
+              <p><a href="#list" className='a-browse'>Documentales</a></p>
             </div>
           </div>
         </div>
@@ -39,101 +135,9 @@ export default function Browse() {
         {/* Notificaciones Dropdown */}
         <div className="dropdown2" style={{ float: 'right' }} >
           <div className="dropbtn"></div>
-          <div className="dropdown-content2" style={{ display: isNotificationsOpen ? 'block' : 'none' }}>
+          <div className="dropdown-content2">
             <div className="span-style"></div>
-            
-            {/* Notificación 1 */}
-            <div className="dropdown-img">
-              <img src="https://github.com/Chinemereem/Netflix-clone/blob/master/images/13reason-why.jpeg?raw=true" alt="" />
-              <p>Countinue Watching<br />
-                13 Reasons Why<br />
-                <span style={{ color: '#2D2D2D' }}>Today</span>
-              </p>
-            </div>
-            
-            {/* Notificación 2 */}
-            <div className="dropdown-img">
-              <img src="https://github.com/Chinemereem/Netflix-clone/blob/master/images/after-life.jpeg?raw=true" alt="" />
-              <p>🛎 Reminder: New Arrival<br />
-                Afterlife Of The Party<br />
-                <span style={{ color: '#2D2D2D' }}>1 day ago</span>
-              </p>
-            </div>
-            
-            {/* Se omiten las demás notificaciones para brevedad, 
-               pero se aplicarían las mismas conversiones de JSX. */}
-            {/* Notificación 3 */}
-             <div className="dropdown-img">
-                <img src="https://github.com/Chinemereem/Netflix-clone/blob/master/images/control-zz.jpeg?raw=true" alt="" />
-                <p>🛎 Reminder: New Season<br/>
-                    Season 2 is ready to watch.<br/>
-                    <span style={{ color: '#2D2D2D' }}>1 day ago</span>
-                </p>
-            </div>
-            {/* Notificación 4 */}
-            <div className="dropdown-img">
-                <img src="https://github.com/Chinemereem/Netflix-clone/blob/master/images/csInapp_112x63.png?raw=true" alt="" />
-                <p>Netflix Lookahead<br/>
-                    Explore what's coming soon<br/>
-                    <span style={{ color: '#2D2D2D' }}>1 day ago</span>
-                </p>
-            </div>
-            {/* Notificación 5 */}
-            <div className="dropdown-img">
-                <img src="https://github.com/Chinemereem/Netflix-clone/blob/master/images/ijee.jpeg?raw=true" alt="" />
-                <p>🛎 Reminder: New Arrival<br/>
-                    Out Of My League<br/>
-                    <span style={{ color: '#2D2D2D' }}>5 days ago</span>
-                </p>
-            </div>
-            {/* Notificación 6 */}
-            <div className="dropdown-img">
-                <img src="https://github.com/Chinemereem/Netflix-clone/blob/master/images/monster-hunt.jpeg?raw=true" alt="" />
-                <p>🛎 Reminder: New Arrival<br/>
-                    Monster Hunt<br/>
-                    <span style={{ color: '#2D2D2D' }}>2 days ago</span>
-                </p>
-            </div>
-            {/* Notificación 7 */}
-            <div className="dropdown-img">
-                <img src="https://github.com/Chinemereem/Netflix-clone/blob/master/images/vivo.jpeg?raw=true" alt="" />
-                <p>New Arrival<br/>
-                    Vivo<br/>
-                    <span style={{ color: '#2D2D2D' }}>3 weeks ago</span>
-                </p>
-            </div>
-            {/* Notificación 8 */}
-            <div className="dropdown-img">
-                <img src="https://github.com/Chinemereem/Netflix-clone/blob/master/images/out-of-my-league.jpeg?raw=true" alt="" />
-                <p>🛎 Reminder: New Arrival<br/>
-                    Ije The Journey<br/>
-                    <span style={{ color: '#2D2D2D' }}>2 days ago</span>
-                </p>
-            </div>
-            {/* Notificación 9 */}
-            <div className="dropdown-img">
-                <img src="https://github.com/Chinemereem/Netflix-clone/blob/master/images/csInapp_112x63.png?raw=true" alt="" />
-                <p>Netflix Lookahead<br/>
-                    Explore what's coming soon<br/>
-                    <span style={{ color: '#2D2D2D' }}>1 day ago</span>
-                </p>
-            </div>
-            {/* Notificación 10 */}
-            <div className="dropdown-img">
-                <img src="https://github.com/Chinemereem/Netflix-clone/blob/master/images/resort-to-love.jpeg?raw=true" alt="" />
-                <p>Reminder:New Arrival<br/>
-                    Resort to love<br/>
-                    <span style={{ color: '#2D2D2D' }}>1 day ago</span>
-                </p>
-            </div>
-            {/* Notificación 11 */}
-            <div className="dropdown-img">
-                <img src="https://github.com/Chinemereem/Netflix-clone/blob/master/images/kissin-booth.jpeg?raw=true" alt="" />
-                <p>🛎 Reminder: New Arrival<br/>
-                    Kissing Booth 3<br/>
-                    <span style={{ color: '#2D2D2D' }}>1 day ago</span>
-                </p>
-            </div>
+          
 
           </div>
         </div>
@@ -143,17 +147,31 @@ export default function Browse() {
           <span className="span-icon"></span>
         </div>
       </div>
-      <div className="between-img-div">
-        <img src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/between-1.webp" className="between-img" alt="" />
+      
+              {/*EL LANZAMIENTO MAS NUEVO */}
+       <div className="between-img-div">
+        {latestContent ? (
+          <img
+            src={`http://localhost:8000/portadas/${latestContent.portada}`} 
+            className="between-img"
+            alt={latestContent.titulo}
+          />
+        ) : (
+          <img
+            src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/between-1.webp"
+            className="between-img"
+            alt="Between" 
+          />
+        )}
       </div>
       
-      <div className="logo-and-text">
+      <div className="logo-and-text mb-5">
         <div 
           className="titleWrapper" 
           style={{ transformOrigin: 'left bottom', transform: 'scale(1) translate3d(0px, 0px, 0px)', transitionDuration: '1300ms', transitionDelay: '0ms' }}
         >
           <div className="billboard-title">
-            <img className="title-logo" src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/netflixsvg.webp" title="Between" alt="Between" />
+            <img className="title-logo" src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/netflixsvg.webp" title="Between" alt="Between" style={{ visibility: 'hidden' }} />
           </div>
         </div>
         
@@ -161,35 +179,29 @@ export default function Browse() {
           className="info-wrapper" 
           style={{ transform: 'translate3d(0px, 0px, 0px)', transitionDuration: '1300ms', transitionDelay: '0ms', opacity: 1 }}
         >
-          <div className="info-wrapper-fade" style={{ opacity: 1, transitionDuration: '600ms', transitionDelay: '200ms' }}>
-            <div className="series-synopsis">
-              After a mysterious disease kills every resident over 21 years old,<br />
-              survivors of a town must fend for<br />
-              themselves when the government quarantines them.
-            </div>
-          </div>
+      
           
-          <button className="color-primary" tabIndex="-1" type="button">
-            <div className="ltr-1ksxkn9">
-              <div className="medium ltr-dguo2f" role="presentation">
-                {/* SVG for Play button */}
-                <svg className="svg-radius" viewBox="0 0 24 24"><path d="M6 4l15 8-15 8z" fill="currentColor"></path></svg>
-              </div>
-            </div>
-            <div className="just-div" style={{ width: '1rem' }}></div>
-            <span className="info-btn">Play</span>
-          </button>
-          
-          <button className="button-secondary" type="button">
-            <div className="ltr">
-              <div className="medium">
-                {/* SVG for More Info button */}
-                <svg className="svg-radius" viewBox="0 0 24 24"><path d="M22 12c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2s10 4.477 10 10zm-2 0a8 8 0 0 0-8-8 8 8 0 0 0-8 8 8 8 0 0 0 8 8 8 8 0 0 0 8-8zm-9 6v-7h2v7h-2zm1-8.75a1.21 1.21 0 0 1-.877-.364A1.188 1.188 0 0 1 10.75 8c0-.348.123-.644.372-.886.247-.242.54-.364.878-.364.337 0 .63.122.877.364.248.242.373.538.373.886s-.124.644-.373.886A1.21 1.21 0 0 1 12 9.25z" fill="currentColor"></path></svg>
-              </div>
-            </div>
-            <div className="more-info" style={{ width: '1rem' }}></div>
-            <span className="info-btn">More Info</span>
-          </button>
+         <div className="d-flex gap-2 mt-3">
+  {/* Botón Play */}
+  <button className="btn btn-light btn-lg d-flex align-items-center"
+    type="button" data-bs-toggle="modal"
+  data-bs-target="#contentModal"
+     onClick={() => {
+        setSelectedContent(latestContent); 
+    }}>
+      <i className='bi bi-play-fill'></i>
+    Play
+  </button>
+
+  {/* Botón More Info */}
+  <button
+    className="btn btn-secondary btn-lg d-flex align-items-center"
+    type="button"
+  >
+       <i className='bi bi-info-circle'></i> &nbsp;More Info
+  </button>
+</div>
+
           
         </div>
       </div>
@@ -204,242 +216,123 @@ export default function Browse() {
           </div>
         </button>
         <span className="rating">
-          <span className="maturity-number">16+</span>
+          <span className="maturity-number">3+</span>
         </span>
       </div>
 
-       <section className="all-drama">
-        {/* drama collection */}
-        <div className="tv-dramas" id="dramas">
-          <h2 className="tvd-h2">Tv Dramas</h2>
-          <div className="div-width">
-            <div className="all-movie-div">
-              {/* Note: In React, these movie items would typically be mapped from an array. */}
-              <div className="orange">
-                <img src="https://github.com/Chinemereem/Netflix-clone/blob/master/images/orange%20is%20the%20new.jpg?raw=true" alt="orange image" />
-              </div>
-              <div className="outerbanks">
-                <img src="https://github.com/Chinemereem/Netflix-clone/blob/master/images/outer-banks.jpg?raw=true" alt="outerbanks image" />
-              </div>
-              <div className="gooddoctor">
-                <img src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/gooddoctor.webp" alt="gooddoctor image" />
-              </div>
-              <div className="teenwolf">
-                <img src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/teenwolf.webp" alt="teenwolf image" />
-              </div>
-              <div className="vincezo">
-                <img src="https://github.com/Chinemereem/Netflix-clone/blob/master/images/vincenzo.jpg?raw=true" alt="vincenzo image" />
-              </div>
-              <div className="nevertheless">
-                <img src="https://github.com/Chinemereem/Netflix-clone/blob/master/images/nevertheless.jpg?raw=true" alt="nevertheless image" />
-              </div>
-              <div className="notokay">
-                <img src="https://github.com/Chinemereem/Netflix-clone/blob/master/images/it%20is%20okay%20to%20not%20be%20okay.jpg?raw=true" alt="netflix not okay series img" />
-              </div>
-            </div>
+       <section className="all-drama mt-2">
+        {/*PELICULAS */}
+<div className="tv-dramas mb-2" id="dramas">
+  <div className="div-width">
+    <h2 className="tv-h2">Películas</h2>
+
+    <div className="all-movie-div mt-3">
+      {contents
+        .filter((item) => item.tipo === "pelicula")
+        .map((movie) => (
+          <div key={movie.id} className="movie-item">
+            <img
+              src={`http://localhost:8000/portadas/${movie.portada}`}
+              alt={movie.titulo}
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                setSelectedContent(movie);
+
+                // Abrir modal manualmente
+                const modal = new bootstrap.Modal(
+                  document.getElementById("contentModal")
+                );
+                modal.show();
+              }}
+            />
           </div>
-        </div>
-        <div className="aror">
+        ))}
+    </div>
+  </div>
+</div>
+
+<div className="aror">
           <a className="prev a-browse">&#10094;</a>
           <a className="next a-browse">&#10095;</a>
         </div>
 
-        {/* trending now */}
-        <div className="trending-now">
-          <h2 className="all-tvd-h2">Trending now</h2>
-          {/* ... otros divs de trending now convertidos ... */}
-          <div className="second-div-width">
-            <div className="second-all-movie-div">
-              <div className="control-z">
-                <img src="https://github.com/Chinemereem/Netflix-clone/blob/master/images/controlz.jpg?raw=true" alt="contro z" />
-              </div>
-              <div className="crazy-rich-asians">
-                <img src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/crazy%20rich%20asian.webp" alt="crazy-rich-asians" />
-              </div>
-              <div className="blood">
-                <img src="https://github.com/Chinemereem/Netflix-clone/blob/master/images/blood.jpg?raw=true" alt="blood series" />
-              </div>
-              <div className="mimi">
-                <img src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/mimi.webp" alt="mimi" />
-              </div>
-              <div className="my-secrete-romance">
-                <img src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/secrete%20romance.webp" alt="my-secrete-romance" />
-              </div>
-              <div className="insatiable">
-                <img src="https://github.com/Chinemereem/Netflix-clone/blob/master/images/insatiable.jpg?raw=true" alt="insatiable" />
-              </div>
-              <div className="tempted">
-                <img src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/tempted.webp" alt="tempted" />
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="aror">
-          <a className="prev a-browse">&#10094;</a>
-          <a className="next a-browse">&#10095;</a>
-        </div>
+{/* SERIES */}
+<div className="tv-series mb-4" id="series">
+  <h2 className="tvd-h2">Series</h2>
+  <div className="div-width">
+    <div className="all-movie-div">
 
-        {/* my list */}
+      {contents
+        .filter((item) => item.tipo === "serie")
+        .map((serie) => (
+          <div
+            key={serie.id}
+            className="movie-item"
+            onClick={() => openSeriesModal(serie)}
+            style={{ cursor: "pointer" }}
+          >
+            <img
+              src={`http://localhost:8000/portadas/${serie.portada}`}
+              alt={serie.titulo}
+            />
+          </div>
+        ))}
+
+    </div>
+  </div>
+</div>
+
+
+
+
+        {/*MI LISTA DE ACUERDO AL PERFIL*/}
         <div className="my-list" id="list">
-          <h2 className="h2list">My List</h2>
+          <h2 className="h2list mt-5">Documentales</h2>
           {/* ... otros divs de my list convertidos ... */}
           <div className="list-div-width">
             <div className="second-div-list">
               <div className="nevertheless-list">
                 <img src="https://github.com/Chinemereem/Netflix-clone/blob/master/images/nevertheless.jpg?raw=true" alt="" />
               </div>
-              <div className="ije">
-                <img src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/ije.webp" alt="ije" />
-              </div>
-              <div className="controlz-list">
-                <img src="https://github.com/Chinemereem/Netflix-clone/blob/master/images/controlz.jpg?raw=true" alt="control-z" />
-              </div>
-              <div className="hwarang">
-                <img src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/hwarang.webp" alt="hwarang" />
-              </div>
-              <div className="one-day">
-                <img src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/oneday.webp" alt="one day" />
-              </div>
-              <div className="blood-in-list">
-                <img src="https://github.com/Chinemereem/Netflix-clone/blob/master/images/blood.jpg?raw=true" alt="blood" />
-              </div>
-              <div className="blade">
-                <img src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/blade.webp" alt="blade series" />
-              </div>
-              <div className="vincezo">
-                <img src="https://github.com/Chinemereem/Netflix-clone/blob/master/images/vincenzo.jpg?raw=true" alt="vincenzo image" />
-              </div>
+             
             </div>
           </div>
         </div>
-        <div className="aror">
-          <a className="prev a-browse">&#10094;</a>
-          <a className="next a-browse">&#10095;</a>
-        </div>
+        
 
-        {/* only on netflix */}
-        <div className="only-on-netflix">
-          <h2 className="tvtvd-h2">Only On Netflix</h2>
-          {/* ... otros divs de only on netflix convertidos ... */}
-          <div className="netflix-div-width">
-            <div className="netflix-all-movie-div">
-              <div className="nevertheless-list">
-                <img src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/never-big-img.webp" alt="" />
-              </div>
-              <div className="ije">
-                <img src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/vincenzo-bigimg.webp" alt="ije" />
-              </div>
-              <div className="controlz-list">
-                <img src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/not%20okaybig%20img.webp" alt="control-z" />
-              </div>
-              <div className="hwarang">
-                <img src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/outerbanks%20bigimg.webp" alt="hwarang" />
-              </div>
-              <div className="one-day">
-                <img src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/spaceswipper.webp" alt="one day" />
-              </div>
-              <div className="blood-in-list">
-                <img src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/blood%20red%20sky.webp" alt="blood" />
-              </div>
-              <div className="blade">
-                <img src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/blood%20and%20water%20bigimg.webp" alt="blade series" />
-              </div>
-              <div className="image">
-                <img src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/cha-cha-hometpwn.webp" alt="cha-cha-hometpwn" />
-              </div>
-              <div className="image">
-                <img src="https://github.com/Chinemereem/Netflix-clone/blob/master/images/Hes-all-that.jpg?raw=true" alt="he's all that" width="250" />
-              </div>
-              <div className="image">
-                <img src="https://github.com/Chinemereem/Netflix-clone/blob/master/images/sweet-girl.jpg?raw=true" alt="" width="250" />
-              </div>
-              <div className="image">
-                <img src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/king-of-boys.webp" alt="" />
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="aror">
-          <a className="prev a-browse">&#10094;</a>
-          <a className="next a-browse">&#10095;</a>
-        </div>
 
-        {/* top10-now */}
-        <div className="top10-now" id="top-tv">
-          <h2 className="top10-tvd-h2">Top 10 In Nigeria</h2>
-          {/* ... otros divs de top10-now convertidos ... */}
-          <div className="top10-div-width">
-            <div className="top10-all-movie-div">
-              <div className="quams-money">
-                <div className="topp-one"></div>
-                <img src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/quans%20money.webp" alt="quams money" />
-              </div>
-              <div className="top2-film-nigerial">
-                <div className="half-circle"></div>
-                <img src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/top%20two%20netflix.webp" alt="72 film" className="imange" />
-              </div>
-              <div className="mercenary">
-                <div className="number-three-css"></div>
-                <img src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/mercenary.webp" alt="mercenary series" />
-              </div>
-              <div className="div-number-four">
-                <div className="number-four"></div>
-                <img src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/resort%20to%20love.jpeg?raw=true" alt="Resort to love" />
-              </div>
-              <div className="div-number-five">
-                <div className="number-five-css"></div>
-                <img src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/ije%20top%20five.webp" alt="ije" />
-              </div>
-              <div className="div-number-6">
-                <div className="number-six">6</div>
-                <img src="https://github.com/Chinemereem/Netflix-clone/blob/master/images/sex%20life.jpeg?raw=true" alt="sex life" className="sex-life-img" />
-              </div>
-              <div className="div-number-7">
-                <div className="number-seven"></div>
-                <img src="https://github.com/Chinemereem/Netflix-clone/blob/master/images/sex%20life.jpeg?raw=true" alt="sex life" />
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="aror">
+<div className="container my-4">
+  <h2 className="text-white fw-bold mb-3">Top 5 en México</h2>
+
+  <div className="d-flex overflow-auto gap-4 top10-container">
+    {top5.map((item, index) => (
+      <div key={item.id} className="top10-item position-relative">
+        <img
+          src={`http://localhost:8000/portadas/${item.portada}`}
+          className="img-fluid rounded"
+          alt={item.titulo}
+        />
+        <span className="top10-number">{index + 1}</span>
+      </div>
+    ))}
+  </div>
+</div>
+     <div className="aror">
           <a className="prev a-browse">&#10094;</a>
           <a className="next a-browse">&#10095;</a>
         </div>
 
         {/* women behind the screen */}
         <div className="my-list div-list">
-          <h2 className="h2list" style={{ position: 'relative', top: '60px' }}>Women behind the screen</h2> 
-          <a className="sec-next a-browse">&#10095;</a>
-          {/* ... otros divs de women behind the screen convertidos ... */}
+          <h2 className="h2list mb-4" style={{ position: 'relative', top: '60px' }}>Animes</h2> 
           <div className="list-div-width">
             <div className="second-div-list">
               <div className="nevertheless-list">
                 <img src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/intern.webp" alt="" />
               </div>
-              <div className="ije">
-                <img src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/what%20girl%20wants.webp" alt="ije" />
-              </div>
-              <div className="controlz-list">
-                <img src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/five%20feet.webp" alt="control-z" />
-              </div>
-              <div className="hwarang">
-                <img src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/wonderwoman.webp" alt="hwarang" />
-              </div>
-              <div className="one-day">
-                <img src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/enchanted.webp" alt="one day" />
-              </div>
-              <div className="blood-in-list">
-                <img src="https://github.com/Chinemereem/Netflix-clone/blob/master/images/jiva.jpeg?raw=true" alt="blood" />
-              </div>
-              <div className="blade">
-                <img src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/angel.webp" alt="blade series" />
-              </div>
+             
             </div>
           </div>
-        </div>
-        <div className="aror">
-          <a className="prev a-browse">&#10094;</a>
-          <a className="next a-browse">&#10095;</a>
         </div>
       </section>
  <footer>
@@ -475,6 +368,163 @@ export default function Browse() {
         </div>
       </footer>
       </div>
+
+      {/* MODAL DE INFORMACIÓN DEL CONTENIDO */}
+<div
+  className="modal fade"
+  id="contentModal"
+  tabIndex="-1"
+  aria-hidden="true"
+>
+  <div className="modal-dialog modal-lg modal-dialog-centered">
+    <div className="modal-content bg-dark text-white">
+
+      {/* HEADER */}
+      <div className="modal-header border-secondary">
+        <h5 className="modal-title">
+          {selectedContent?.titulo} ({selectedContent?.fechaEstreno})
+        </h5>
+        <button
+          type="button"
+          className="btn-close btn-close-white"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+
+      {/* BODY */}
+      <div className="modal-body">
+
+        {/* VIDEO */}
+        {selectedContent?.video && (
+          <video
+            src={`http://localhost:8000/episodes/${selectedContent.video}`}
+            className="w-100 rounded mb-3"
+            controls
+          ></video>
+        )}
+
+        <p><strong></strong> {selectedContent?.descripcion}</p>
+        <p><strong>Duración:</strong> {selectedContent?.duracion} min</p>
+<p><strong>Clasificación </strong> {selectedContent?.clasificacion?.nombre}, <strong>Género</strong> {selectedContent?.genero?.nombre} </p>
+
+      </div>
+
+      {/* FOOTER */}
+      <div className="modal-footer border-secondary">
+        <button
+          className="btn btn-outline-light"
+          data-bs-dismiss="modal"
+        >
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{/* MODAL DE SERIES */}
+<div
+  className="modal fade"
+  id="seriesModal"
+  tabIndex="-1"
+  aria-hidden="true"
+>
+  <div className="modal-dialog modal-lg modal-dialog-centered">
+    <div className="modal-content bg-dark text-white">
+
+      <div className="modal-header border-secondary">
+        <h5 className="modal-title">{selectedContent?.titulo}</h5>
+        <button className="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div className="modal-body">
+
+        {selectedContent?.grouped && Object.keys(selectedContent.grouped).length > 0 ? (
+          <>
+            {/* SELECT DE TEMPORADAS */}
+            <label className="fw-bold">Temporada:</label>
+            <select
+              className="form-select mb-3 bg-secondary text-white"
+              value={selectedSeason || ""}
+              onChange={(e) => {
+                const seasonKey = e.target.value;
+                setSelectedSeason(seasonKey);
+                setSelectedEpisode(null);
+              }}
+            >
+              <option value="">Selecciona temporada</option>
+
+              {Object.keys(selectedContent.grouped)
+                .sort((a, b) => Number(a) - Number(b))
+                .map((seasonKey) => (
+                  <option key={seasonKey} value={seasonKey}>
+                    Temporada {seasonKey}
+                  </option>
+                ))}
+            </select>
+
+            {/* SELECT DE EPISODIOS */}
+            {selectedSeason && (
+              <>
+                <label className="fw-bold">Episodio:</label>
+                <select
+                  className="form-select mb-3 bg-secondary text-white"
+                  value={selectedEpisode || ""}
+                  onChange={(e) => setSelectedEpisode(e.target.value)}
+                >
+                  <option value="">Selecciona episodio</option>
+
+                  {selectedContent.grouped[selectedSeason]
+                    .sort((a, b) => a.numero - b.numero)
+                    .map((ep) => (
+                      <option key={ep.id} value={ep.id}>
+                        {ep.numero}. {ep.titulo}
+                      </option>
+                    ))}
+                </select>
+              </>
+            )}
+
+            {/* VIDEO DEL EPISODIO O TRAILER */}
+            {selectedSeason && selectedEpisode ? (
+              (() => {
+                const episodio = selectedContent.grouped[selectedSeason]
+                  .find(ep => String(ep.id) === String(selectedEpisode));
+
+                return episodio ? (
+                  <video
+                    src={`http://localhost:8000/episodes/${episodio.video}`}
+                    controls
+                    className="w-100 rounded mb-3"
+                  ></video>
+                ) : null;
+              })()
+            ) : (
+              <video
+                src={`http://localhost:8000/contents/${selectedContent?.video}`}
+                controls
+                className="w-100 rounded mb-3"
+              ></video>
+            )}
+          </>
+        ) : (
+          <p>No hay temporadas ni episodios registrados.</p>
+        )}
+
+        {/* INFO GENERAL */}
+        <p className="mt-3">{selectedContent?.descripcion}</p>
+        <p><strong>Clasificación:</strong> {selectedContent?.clasificacion?.nombre}</p>
+        <p><strong>Género:</strong> {selectedContent?.genero?.nombre}</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
     </>
     )
 }

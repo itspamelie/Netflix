@@ -1,8 +1,79 @@
-*{
- 
-  
-   
+
+.modal-content {
+  background-color: #111 !important;
+  border-radius: 12px;
 }
+
+.modal-header, .modal-footer {
+  border-color: #333 !important;
+}
+
+video {
+  max-height: 350px;
+  object-fit: cover;
+}
+
+
+.top10-container::-webkit-scrollbar {
+  height: 8px;
+}
+.top10-container::-webkit-scrollbar-thumb {
+  background: #444;
+  border-radius: 10px;
+}
+
+.top10-item {
+  min-width: 140px;
+  position: relative;
+}
+
+.top10-item img {
+  width: 140px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 10px;
+  display: block;
+}
+
+.top10-number {
+  position: absolute;
+  left: -20px;
+  bottom: 10px;
+  font-size: 6rem;
+  font-weight: 900;
+  color: white;
+  text-shadow: 0px 0px 12px rgba(0,0,0,0.9);
+  z-index: 10;
+  line-height: 0.8;
+}
+
+.tv-hd2{
+  margin-top: -100px;
+  
+}
+.tv-series{
+      margin-left: 40px;
+    margin-top: -30px;
+}
+.all-movie-div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px; /* espacio entre películas */
+}
+
+.movie-item img {
+  width: 300px; /* ancho fijo */
+  height: 200px; /* alto fijo */
+  object-fit: cover; /* mantiene proporción y recorta si es necesario */
+  border-radius: 5px; /* opcional, bordes redondeados */
+  transition: transform 0.3s;
+}
+
+.movie-item img:hover {
+  transform: scale(1.05); /* efecto hover */
+}
+
+
 .a-browse{
   text-decoration:none;
  color: #BDBDBD;
@@ -213,6 +284,7 @@ margin-left: 10px;
   /* image and logo */
   .between-img-div{
      position: relative;
+     height: 600px;
      top: 10px;
   }
 .logo-and-text{
@@ -292,17 +364,16 @@ width: 95px;
 /* drama collection */
 .tv-dramas{
     margin-left: 40px;
-    margin-top: 70px;
+    margin-top: 0px;
 }
 .tvd-h2{
-    position: relative;;
-    top: -45px;
+    position: relative;
 }
 .div-width{
     width: 100%;
     cursor: pointer;
     overflow-x: auto;
-    margin-top: -45px;
+    margin-top: -100px;
 }
 .all-movie-div{
     display: flex;

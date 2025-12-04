@@ -11,6 +11,7 @@ export default function SeriesDashboard() {
     const token = localStorage.getItem("token");
     const [episodes, setEpisodes] = useState([]);
     const [contents, setContents] = useState([]);
+    
 
     // Estados para modal de capítulo
     const [showEpisodeModal, setShowEpisodeModal] = useState(false);
