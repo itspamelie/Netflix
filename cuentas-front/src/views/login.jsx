@@ -1,11 +1,19 @@
 import { useState,useEffect } from 'react'
 import '../css/styles.css'
 import { useNavigate } from 'react-router-dom'
+import { Link } from "react-router-dom";
+
+
+
+
+
+
 export default function Login() {
 
     const navigate =useNavigate()
     const[email, setEmail]= useState("admin@example.com")
     const [password,setPassword]= useState("123")
+
     const submit= async (e)=>{
         e.preventDefault()
         try{
@@ -20,37 +28,30 @@ export default function Login() {
                 password:password
             }),
 
-            
         });
+
         const data= await res.json()
         console.log("RESPUESTA",data);
 
-     // Verifica si la API envió el token correctamente
-      if (res.ok && data.token) {
+        if (res.ok && data.token) {
 
-        // Guardar token y user en localStorage
-        localStorage.setItem("token", data.token)
-        localStorage.setItem("user", JSON.stringify(data.user))
-        if(data.user.role==0){
-        navigate("/index")
+            localStorage.setItem("token", data.token)
+            localStorage.setItem("user", JSON.stringify(data.user))
+
+            if(data.user.role==0){
+                navigate("/index")
+            } else {
+                navigate("/dashboard")
+            }
+
         } else {
-        navigate("/dashboard")
+            alert("Credenciales incorrectas o error en el servidor")
         }
- 
-      
-      } else {
-        alert("Credenciales incorrectas o error en el servidor")
-      }
 
         }catch(error){
             console.log(error);
-            
         }
-
-
-        
     }
-
 
   return (
    <>
@@ -78,7 +79,7 @@ export default function Login() {
     {/* LOGIN */}
     <div className="login">
       <form onSubmit={submit} className="signin-form">
-        <h1 className="title">Sign In</h1>
+        <h1 className="title">Iniciar sesión</h1>
 
         {/* EMAIL */}
         <div className="field">
@@ -89,7 +90,7 @@ export default function Login() {
             className="text-input"
             required
           />
-          <span className="floating-label">Email address or phone number</span>
+          <span className="floating-label">Correo electrónico o número de teléfono</span>
         </div>
 
         {/* PASSWORD */}
@@ -101,19 +102,19 @@ export default function Login() {
             onChange={(e) => setPassword(e.target.value)}
             value={password}
           />
-          <span className="floating-label test">Password</span>
+          <span className="floating-label test">Contraseña</span>
         </div>
 
-        <button type="submit" className="signin-btn mb-5">Sign In</button>
+        <button type="submit" className="signin-btn mb-5">Iniciar sesión</button>
 
         {/* REMEMBER ME */}
         <div className="action-group">
           <label htmlFor="remember-me">
             <input type="checkbox" className="checkbox" id="remember-me" />
-            Remember me
+            Recuérdame
           </label>
 
-          <a className="a-special" href="#">Need Help?</a>
+          <a className="a-special" href="#">¿Necesitas ayuda?</a>
         </div>
 
         {/* ONBOARDING */}
@@ -128,29 +129,34 @@ export default function Login() {
                 </g>
               </svg>
             </div>
-            <small>Login with Facebook</small>
+            <small>Inicia sesión con Facebook</small>
           </div>
 
           <p>
-            New to Netflix?
-            <a className="a-special" href="#"> Sign up now.</a>
+            ¿Nuevo en Netflix?
+            <a className="a-special" href="#"> Créate una cuenta ahora.</a>
+
+
           </p>
+          <Link to="/">Ir al Home</Link>
         </div>
       </form>
     </div>
 
     {/* FOOTER */}
+
+    
     <div className="footer">
-      <p className="questions">Questions? Call 1-555-555-5555</p>
+      <p className="questions">¿Preguntas? Llama al 1-555-555-5555</p>
 
       <div className="terms">
-        <a className="a-special" href="#">Gift Card Terms</a>
-        <a className="a-special" href="#">Terms of Use</a>
-        <a className="a-special" href="#">Privacy Statement</a>
+        <a className="a-special" href="#">Términos de tarjetas de regalo</a>
+        <a className="a-special" href="#">Términos de uso</a>
+        <a className="a-special" href="#">Declaración de privacidad</a>
       </div>
 
       <select>
-        <option value="english">English</option>
+        <option value="english">Inglés</option>
         <option value="espanol">Español</option>
       </select>
     </div>
