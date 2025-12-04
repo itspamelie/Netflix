@@ -1,0 +1,260 @@
+/* Sidebar base */
+.dashboard-sidebar {
+    width: 240px;
+    background: #000;
+    min-height: 100vh;
+    padding: 25px 20px;
+    border-right: 1px solid rgba(255,255,255,0.08);
+}
+
+/* Logo */
+.dashboard-sidebar .logo {
+    width: 120px;
+    margin-bottom: 25px;
+}
+
+/* LISTA */
+.dashboard-sidebar .nav {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+/* ITEM */
+.dashboard-sidebar .nav-item {
+    margin-bottom: 12px;
+}
+
+/* LINKS NORMALES */
+.dashboard-sidebar .nav-link {
+    display: block;
+    padding: 10px 15px;
+    color: #eee;
+    text-decoration: none;
+    font-size: 1rem;
+    border-radius: 4px;
+    transition: all 0.25s ease;
+    position: relative;
+}
+
+/* ⭐ HOVER ANIMADO ESTILO NETFLIX */
+.dashboard-sidebar .nav-link:hover {
+    background: #e50914;
+    color: #fff;
+    transform: translateX(6px);
+    box-shadow: 4px 4px 10px rgba(0,0,0,0.4);
+}
+
+/* Cuando el link está activo (si lo activas después) */
+.dashboard-sidebar .nav-link.active {
+    background: #e50914;
+    color: #fff;
+    font-weight: bold;
+}
+
+/* Animación sutil cuando entras al sidebar */
+.dashboard-sidebar {
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateX(-20px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+
+
+
+/* ------------------------------------------ */
+/*  ESTILO GENERAL DEL DASHBOARD              */
+/* ------------------------------------------ */
+
+.dashboard-layout {
+    background: #111;
+    min-height: 100vh;
+    display: flex;
+    color: #fff;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+/* ------------------------------------------ */
+/*  SIDEBAR                                   */
+/* ------------------------------------------ */
+
+.dashboard-sidebar {
+    width: 250px;
+    background: #000;
+    min-height: 100vh;
+    padding: 25px 20px;
+    border-right: 1px solid rgba(255,255,255,0.1);
+}
+
+.dashboard-sidebar img.logo {
+    width: 140px;
+    margin-bottom: 30px;
+}
+
+.dashboard-sidebar .nav {
+    padding: 0;
+    list-style: none;
+}
+
+.dashboard-sidebar .nav-item {
+    margin-bottom: 8px;
+}
+
+.dashboard-sidebar .nav-link {
+    display: block;
+    padding: 10px 14px;
+    border-radius: 4px;
+    color: #ddd;
+    text-decoration: none;
+    transition: background 0.2s, color 0.2s;
+}
+
+.dashboard-sidebar .nav-link:hover {
+    background: #e50914;
+    color: #fff;
+}
+
+.dashboard-sidebar .nav-link.active {
+    background: #e50914;
+    color: #fff;
+}
+
+/* ------------------------------------------ */
+/*  CONTENIDO PRINCIPAL                       */
+/* ------------------------------------------ */
+
+.dashboard-content {
+    flex: 1;
+    padding: 30px;
+    background: #111;
+}
+
+/* TITULOS */
+
+.dashboard-title {
+    font-size: 2rem;
+    font-weight: 900;
+    margin-bottom: 20px;
+}
+
+/* ------------------------------------------ */
+/*  TARJETAS / CARDS ESTILO NETFLIX           */
+/* ------------------------------------------ */
+
+.dashboard-card {
+    background: #1b1b1b;
+    padding: 25px;
+    border-radius: 6px;
+    border: 1px solid rgba(255,255,255,0.08);
+    box-shadow: 0 0 15px rgba(0,0,0,0.4);
+    margin-bottom: 20px;
+}
+
+.dashboard-card h3 {
+    font-size: 1.3rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.dashboard-card p {
+    color: #ccc;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* ------------------------------------------ */
+/*  BOTONES ESTILO NETFLIX                    */
+/* ------------------------------------------ */
+
+.btn-netflix {
+    background: #e50914;
+    border: none;
+    padding: 10px 18px;
+    color: white;
+    font-weight: bold;
+    font-size: 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-netflix:hover {
+    background: #b20710;
+}
+
+/* ------------------------------------------ */
+/*  TABLAS DARK MODE                          */
+/* ------------------------------------------ */
+
+.dashboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.dashboard-table th,
+.dashboard-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+
+.dashboard-table th {
+    background: #222;
+    color: #fff;
+}
+
+.dashboard-table tr:hover {
+    background: rgba(255,255,255,0.05);
+}
+
+/* ------------------------------------------ */
+/*  FORMULARIOS DARK STYLE                    */
+/* ------------------------------------------ */
+
+.dashboard-input {
+    width: 100%;
+    background: #222;
+    color: #fff;
+    border: 1px solid rgba(255,255,255,0.2);
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 15px;
+}
+
+.dashboard-input::placeholder {
+    color: rgba(255,255,255,0.5);
+}
+
+.dashboard-input:focus {
+    border-color: #fff;
+    outline: none;
+}
+
+/* ------------------------------------------ */
+/*  FOOTER DEL DASHBOARD                      */
+/* ------------------------------------------ */
+
+.dashboard-footer {
+    margin-top: 40px;
+    padding: 20px 0;
+    border-top: 1px solid rgba(255,255,255,0.1);
+    color: #777;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* ------------------------------------------ */
+/*  MODO RESPONSIVE                           */
+/* ------------------------------------------ */
+
+@media (max-width: 768px) {
+    .dashboard-sidebar {
+        display: none; /* puedes cambiarlo a menú hamburguesa después */
+    }
+
+    .dashboard-content {
+        padding: 20px;
+    }
+}

@@ -1,3 +1,118 @@
+
+
+/* --- FIX PARA LA VISTA PAYMENT (texto full blanco) --- */
+
+.payment-card,
+.payment-card * {
+    color: #fff !important;      /* Texto completamente blanco */
+}
+
+.payment-card .modal-subtitle {
+    color: #fff !important;      /* El subtítulo también blanco */
+}
+
+.payment-card input::placeholder {
+    color: rgba(255,255,255,0.8) !important;  /* Placeholder más visible */
+}
+
+
+
+/* --- MODAL NETFLIX STYLE --- */
+
+.netflix-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.75);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 99999;
+    animation: fadeIn 0.3s ease;
+}
+
+.netflix-modal {
+    background: #111;
+    padding: 40px 35px;
+    width: 450px;
+    border-radius: 6px;
+    position: relative;
+    color: white;
+    animation: popup 0.25s ease;
+    border: 1px solid rgba(255,255,255,0.1);
+    box-shadow: 0 0 25px rgba(0,0,0,0.6);
+}
+
+.modal-title {
+    font-size: 2rem;
+    font-weight: 900;
+    margin-bottom: 10px;
+}
+
+.modal-subtitle {
+    font-size: 1.1rem;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 25px;
+}
+
+.modal-input {
+    background: #333 !important;
+    color: white !important;
+    border: none;
+    padding: 14px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+}
+
+.modal-input::placeholder {
+    color: rgba(255,255,255,0.7);
+}
+
+.modal-input:focus {
+    border: 2px solid #fff !important;
+    box-shadow: none !important;
+}
+
+.modal-btn {
+    height: 50px;
+    font-size: 1.2rem;
+    margin-top: 10px;
+}
+
+/* Botón de cierre */
+.modal-close-btn {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    background: #e50914;
+    border: none;
+    color: white;
+    font-size: 1.8rem;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 10px rgba(0,0,0,.5);
+}
+
+.modal-close-btn:hover {
+    background: #b20710;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes popup {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+
+
+/* modal style */
+
 .body-home {
     font-family: 'Bebas Neue', sans-serif;
 }
