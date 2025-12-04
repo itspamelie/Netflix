@@ -102,9 +102,7 @@ public function store(Request $request)
             'numero'=>'required|numeric',
             'duracion'=>'required|numeric',
             'sinopsis'=>'required|string|min:2',
-            'video'=>'required|file|mimetypes:video/mp4,video/avi,video/mpeg,video/quicktime|max:51200',
-            'temporada_id'=>'required',
-            'contenido_id'=>'required']);
+            'video'=>'nullable|file']);
          $data = Episodio::findOrFail($id);
    //Si viene nuevo archivo de video
     if ($request->hasFile('video')) {

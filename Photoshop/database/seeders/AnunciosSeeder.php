@@ -28,8 +28,8 @@ class AnunciosSeeder extends Seeder
 
          DB::table('anuncios')->insert([
             'nombre' => 'Audio Promocional App',
-            'archivo' => 'anuncios/audio_app.mp3',
-            'tipo' => 'Audio',
+            'archivo' => 'anuncios/audio_app.mp4',
+            'tipo' => 'Video',
         ]);
     }
 }

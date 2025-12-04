@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
+import { Row, Col } from 'react-bootstrap';
+
 
 export default function SeriesDashboard() {
     const token = localStorage.getItem("token");
@@ -20,6 +22,9 @@ export default function SeriesDashboard() {
         sinopsis: "",
         video: null
     });
+
+    // Guardar temporada seleccionada por cada serie
+    const [selectedSeasons, setSelectedSeasons] = useState({});
 
     useEffect(() => {
         fetchEpisodes();
@@ -78,16 +83,25 @@ export default function SeriesDashboard() {
     // Series sin episodios
     const pendingSeries = contents.filter(c => !grouped[c.titulo]);
 
-    // Abrir modal y setear IDs
-    const handleOpenEpisodeModal = (season) => {
-        if (!season.temporadaId || !season.contenidoId) {
+    // Abrir modal y setear IDs de la temporada seleccionada
+    const handleOpenEpisodeModal = (serieName) => {
+        const temporadaNum = selectedSeasons[serieName]; // Temporada actualmente seleccionada
+        if (!temporadaNum) {
+            alert("No hay temporada seleccionada.");
+            return;
+        }
+
+        const season = grouped[serieName][temporadaNum]; // Obtenemos la temporada completa
+        if (!season?.temporadaId || !season?.contenidoId) {
             alert("No se puede agregar capítulo, faltan IDs de temporada o contenido.");
             return;
         }
+
         setCurrentSeason({
             temporadaId: season.temporadaId,
             contenidoId: season.contenidoId
         });
+
         setEpisodeForm({
             titulo: "",
             numero: "",
@@ -95,6 +109,7 @@ export default function SeriesDashboard() {
             sinopsis: "",
             video: null
         });
+
         setShowEpisodeModal(true);
     };
 
@@ -110,38 +125,26 @@ export default function SeriesDashboard() {
         e.preventDefault();
         if (!currentSeason) return;
 
-        try {
-            const fd = new FormData();
-            fd.append("titulo", episodeForm.titulo);
-            fd.append("numero", episodeForm.numero);
-            fd.append("duracion", episodeForm.duracion);
-            fd.append("sinopsis", episodeForm.sinopsis);
-            fd.append("video", episodeForm.video);
-            fd.append("temporada_id", currentSeason.temporadaId);
-            fd.append("contenido_id", currentSeason.contenidoId);
+        const fd = new FormData();
+        fd.append("titulo", episodeForm.titulo);
+        fd.append("numero", episodeForm.numero);
+        fd.append("duracion", episodeForm.duracion);
+        fd.append("sinopsis", episodeForm.sinopsis);
+        fd.append("video", episodeForm.video);
+        fd.append("temporada_id", currentSeason.temporadaId);
+        fd.append("contenido_id", currentSeason.contenidoId);
 
+        try {
             const res = await fetch("http://localhost:8000/api/episodes", {
                 method: "POST",
-                headers: {         
-                    Authorization: `Bearer ${token}`,
-                    Accept: "application/json"
-                },
+                headers: { Authorization: `Bearer ${token.replace(/"/g, "")}` },
                 body: fd
             });
 
-            const ct = res.headers.get("content-type") || "";
-            let data = ct.includes("application/json") ? await res.json() : await res.text();
-
-            console.log("Response:", data);
-
-            if (res.ok) {
-                alert("Capítulo agregado correctamente");
-                setShowEpisodeModal(false);
-                fetchEpisodes(); // refrescar episodios
-            } else {
-                console.error("Error:", data);
-                alert("Error al agregar capítulo");
-            }
+            console.log("STATUS:", res.status, res.statusText);
+            const text = await res.text();
+            console.log("RESPUESTA DEL BACKEND:", text);
+            alert("Revisa la consola para ver la respuesta del servidor");
         } catch (err) {
             console.error(err);
             alert("Error en la petición");
@@ -149,8 +152,7 @@ export default function SeriesDashboard() {
     };
 
 
-
-        // Modal para nueva temporada + capítulo
+    // Modal para nueva temporada + capítulo
     const [showNewSeasonModal, setShowNewSeasonModal] = useState(false);
     const [newSeasonForm, setNewSeasonForm] = useState({
         numero: "",
@@ -164,7 +166,7 @@ export default function SeriesDashboard() {
     });
     const [selectedContentId, setSelectedContentId] = useState(null);
 
-   // --- Funciones para nueva temporada + capítulo ---
+    // --- Funciones para nueva temporada + capítulo ---
     const handleOpenNewSeasonModal = (contenidoId) => {
         setSelectedContentId(contenidoId);
         setNewSeasonForm({
@@ -228,63 +230,183 @@ export default function SeriesDashboard() {
         } catch (err) { console.error(err); alert("Error en la petición"); }
     };
 
+    //ELIMINAR
+    const handleDeleteEpisode = async (episodeId) => {
+        if (!window.confirm("¿Seguro que quieres eliminar este capítulo?")) return;
+
+        try {
+            const res = await fetch(`http://localhost:8000/api/episodes/${episodeId}`, {
+                method: "DELETE",
+                headers: { Authorization: `Bearer ${token.replace(/"/g, "")}` }
+            });
+
+            if (!res.ok) {
+                const text = await res.text();
+                alert("Error al eliminar capítulo: " + text);
+                return;
+            }
+
+            alert("Capítulo eliminado correctamente");
+            fetchEpisodes(); // refrescar lista
+        } catch (err) {
+            console.error(err);
+            alert("Error al eliminar capítulo");
+        }
+    };
+
+//ACTUALIZAR
+const [showEditEpisodeModal, setShowEditEpisodeModal] = useState(false);
+const [editingEpisode, setEditingEpisode] = useState(null);
+const handleOpenEditEpisodeModal = (ep) => {
+  setEditingEpisode(ep);
+  setEpisodeForm({
+    titulo: ep.titulo,
+    numero: ep.numero,
+    duracion: ep.duracion,
+    sinopsis: ep.sinopsis,
+    video: null, // opcional, no obliga a subir video
+  });
+  setShowEditEpisodeModal(true);
+};
+
+
+const handleEpisodeUpdate = async (e) => {
+  e.preventDefault();
+  if (!editingEpisode) return;
+
+  try {
+    const fd = new FormData();
+    fd.append("titulo", episodeForm.titulo || "");
+    fd.append("numero", episodeForm.numero || "");
+    fd.append("duracion", episodeForm.duracion || "");
+    fd.append("sinopsis", episodeForm.sinopsis || "");
+    if (episodeForm.video) fd.append("video", episodeForm.video);
+    fd.append("_method", "PUT"); // Importante para Laravel
+
+    const res = await fetch(`http://localhost:8000/api/episodes/${editingEpisode.id}`, {
+      method: "POST", // usamos POST con _method=PUT
+      headers: {
+        "Authorization": `Bearer ${token.replace(/"/g, "")}`,
+        "Accept": "application/json"
+      },
+      body: fd
+    });
+
+    const data = await res.json(); // parseamos directo a JSON
+
+    if (res.ok) {
+      alert("Episodio actualizado correctamente");
+      fetchEpisodes();
+      setShowEditEpisodeModal(false);
+      setEditingEpisode(null);
+    } else {
+      console.error("Error backend:", data);
+      if (data.errors) {
+        alert("Errores: " + Object.values(data.errors).flat().join(", "));
+      } else {
+        alert("Error al actualizar episodio. Revisa la consola.");
+      }
+    }
+  } catch (err) {
+    console.error(err);
+    alert("Error en la petición");
+  }
+};
+
 
     return (
         <>
+
             <div className="d-flex justify-content-between align-items-center">
                 <h3 className="mb-4">Series con episodios</h3>
             </div>
+<div className="row">
+  {Object.keys(grouped).length === 0 && <p>No hay series con episodios para mostrar</p>}
 
-            {Object.keys(grouped).length === 0 && <p>No hay series con episodios para mostrar</p>}
+  {Object.keys(grouped).map((serieName) => {
+    const temporadas = grouped[serieName];
+    const temporadaKeys = Object.keys(temporadas).sort((a, b) => a - b);
+    const selectedSeason = selectedSeasons[serieName] || temporadaKeys[0];
+    const currentTemp = temporadas[selectedSeason];
 
-            {Object.keys(grouped).map(serieName =>
-                Object.keys(grouped[serieName]).map(tempNum => {
-                    const temp = grouped[serieName][tempNum];
-                    return (
-                        <Card className="mb-4" key={`${serieName}-${tempNum}`} style={{ width: '22rem' }}>
-                            <Card.Body>
-                                <Card.Title>{serieName}</Card.Title>
-                                {temp.titulo && (
-                                    <Card.Subtitle className="mb-2 text-muted">
-                                        Temporada {tempNum} - {temp.titulo}
-                                    </Card.Subtitle>
-                                )}
-                            </Card.Body>
-                            <ListGroup className="list-group-flush">
-                                {temp.episodios.map(ep => (
-                                    <ListGroup.Item key={ep.id}>
-                                        {ep.numero}. {ep.titulo} ({ep.duracion} min)
-                                    </ListGroup.Item>
-                                ))}
-                                <ListGroup.Item className='d-flex justify-content-between'>
-                                    <Button variant="danger" onClick={() => handleOpenEpisodeModal(temp)}>
-                                        Agregar capítulo
-                                    </Button>
-    <Button variant="dark" onClick={() => handleOpenNewSeasonModal(serieName.id)}>Agregar Temporada</Button>
+    return (
+      <div className="col-12 col-md-4 mb-4" key={serieName}>
+        <Card>
+          <Card.Body>
+            <Card.Title>{serieName}</Card.Title>
+            <Form.Group className="mb-2">
+              <Form.Label>Selecciona Temporada</Form.Label>
+              <Form.Select
+  value={selectedSeasons[serieName] || ""}
+  onChange={(e) =>
+    setSelectedSeasons(prev => ({
+      ...prev,
+      [serieName]: e.target.value
+    }))
+  }
+>
+  <option value="" disabled>
+    Selecciona una temporada
+  </option>
+  {temporadaKeys.map(tn => (
+    <option key={tn} value={tn}>
+      Temporada {tn} - {temporadas[tn].titulo}
+    </option>
+  ))}
+</Form.Select>
 
-                                </ListGroup.Item>
-                            </ListGroup>
-                        </Card>
-                    )
-                })
-            )}
 
-            <hr />
-            <h3 className="mb-4">Pendientes de episodios</h3>
-            {pendingSeries.length === 0 && <p>No hay series pendientes</p>}
+            </Form.Group>
+          </Card.Body>
 
-            {pendingSeries.map(s => (
-                <Card className="mb-3" key={s.id} style={{ width: '18rem' }}>
-                    <Card.Body>
-                        <Card.Title>{s.titulo}</Card.Title>
-                        <Card.Text>Sin episodios aún</Card.Text>
-                        <Card.Text>
-    <Button variant="danger" onClick={() => handleOpenNewSeasonModal(s.id)}>Agregar Nueva Temporada</Button>
-
-                        </Card.Text>
-                    </Card.Body>
-                </Card>
+          <ListGroup className="list-group-flush">
+            {currentTemp.episodios.map(ep => (
+              <ListGroup.Item key={ep.id} className="d-flex justify-content-around align-items-center px-4">
+                <span>{ep.numero}. {ep.titulo} ({ep.duracion} min)</span>
+                <Button variant="danger" size="sm" onClick={() => handleDeleteEpisode(ep.id)}>
+                 <i className='bi bi-trash'></i>
+                </Button>
+               <Button variant="warning" size="sm" onClick={() => handleOpenEditEpisodeModal(ep)}>
+  <i className='bi bi-pencil'></i>
+</Button>
+              </ListGroup.Item>
             ))}
+            <ListGroup.Item className="d-flex justify-content-between">
+              <Button variant="danger" onClick={() => handleOpenEpisodeModal(serieName)}>
+                + capítulo
+              </Button>
+              <Button variant="dark" onClick={() => handleOpenNewSeasonModal(currentTemp.contenidoId)}>
+                + Temporada
+              </Button>
+            </ListGroup.Item>
+          </ListGroup>
+        </Card>
+      </div>
+    );
+  })}
+</div>
+
+<hr />
+<h3 className="mb-4">Pendientes de episodios</h3>
+
+<div className="row">
+  {pendingSeries.length === 0 && <p>No hay series pendientes</p>}
+
+  {pendingSeries.map(s => (
+    <div className="col-12 col-md-4 mb-4" key={s.id}>
+      <Card>
+        <Card.Body>
+          <Card.Title>{s.titulo}</Card.Title>
+          <Card.Text>Sin episodios aún</Card.Text>
+          <Button variant="danger" onClick={() => handleOpenNewSeasonModal(s.id)}>
+            + Temporada
+          </Button>
+        </Card.Body>
+      </Card>
+    </div>
+  ))}
+</div>
+
 
             {/* Modal de agregar capítulo */}
             <Modal show={showEpisodeModal} onHide={() => setShowEpisodeModal(false)}>
@@ -349,7 +471,7 @@ export default function SeriesDashboard() {
             </Modal>
 
 
-               {/* Modal para nueva temporada + capítulo */}
+            {/* Modal para nueva temporada + capítulo */}
             <Modal show={showNewSeasonModal} onHide={() => setShowNewSeasonModal(false)}>
                 <Modal.Header closeButton>
                     <Modal.Title>Agregar Nueva Temporada + Capítulo</Modal.Title>
@@ -393,6 +515,44 @@ export default function SeriesDashboard() {
                     </Form>
                 </Modal.Body>
             </Modal>
+
+
+            <Modal show={showEditEpisodeModal} onHide={() => { setShowEditEpisodeModal(false); setEditingEpisode(null); }}>
+  <Modal.Header closeButton>
+    <Modal.Title>Editar Capítulo</Modal.Title>
+  </Modal.Header>
+  <Modal.Body>
+    <Form onSubmit={handleEpisodeUpdate}>
+      <Form.Group className="mb-3">
+        <Form.Label>Título</Form.Label>
+        <Form.Control type="text" name="titulo" value={episodeForm.titulo} onChange={handleEpisodeChange} required />
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Número</Form.Label>
+        <Form.Control type="number" name="numero" value={episodeForm.numero} onChange={handleEpisodeChange} required />
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Duración (min)</Form.Label>
+        <Form.Control type="number" name="duracion" value={episodeForm.duracion} onChange={handleEpisodeChange} required />
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Sinopsis</Form.Label>
+        <Form.Control type="text" name="sinopsis" value={episodeForm.sinopsis} onChange={handleEpisodeChange} required />
+      </Form.Group>
+
+      <Form.Group className="mb-3">
+        <Form.Label>Video (opcional)</Form.Label>
+        <Form.Control type="file" name="video" accept="video/*" onChange={handleEpisodeChange} />
+      </Form.Group>
+
+      <Button variant="warning" type="submit">Actualizar Capítulo</Button>
+    </Form>
+  </Modal.Body>
+</Modal>
+
         </>
     )
 }
