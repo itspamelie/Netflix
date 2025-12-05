@@ -39,7 +39,7 @@ const [selectedEpisode, setSelectedEpisode] = useState(null);
             });
             const data = await res.json();
             if (res.ok) {
-                const seriesOnly = data.data.filter(ep => ep.contenido?.tipo === "serie");
+                const seriesOnly = data.data.filter(ep => ep.contenido?.tipo !== "pelicula");
                 setEpisodes(seriesOnly);
 
             }
@@ -284,20 +284,26 @@ const openSeriesModal = (serie) => {
 
 
 
-
-        {/*MI LISTA DE ACUERDO AL PERFIL*/}
-        <div className="my-list" id="list">
-          <h2 className="h2list mt-5">Documentales</h2>
-          {/* ... otros divs de my list convertidos ... */}
-          <div className="list-div-width">
-            <div className="second-div-list">
-              <div className="nevertheless-list">
-                <img src="https://github.com/Chinemereem/Netflix-clone/blob/master/images/nevertheless.jpg?raw=true" alt="" />
-              </div>
-             
-            </div>
+<div className="my-list" id="list">
+  <h2 className="h2list mt-5">Documentales</h2>
+  <div className="list-div-width">
+    <div className="second-div-list">
+      {contents
+        .filter((item) => item.tipo === "documental")
+        .map((doc) => (
+          <div
+            key={doc.id}
+            className="movie-item nevertheless-list"
+            style={{ cursor: "pointer" }}
+            onClick={() => openSeriesModal(doc)}
+          >
+            <img src={`http://localhost:8000/portadas/${doc.portada}`} alt={doc.titulo} />
           </div>
-        </div>
+        ))}
+    </div>
+  </div>
+</div>
+
         
 
 
@@ -322,18 +328,29 @@ const openSeriesModal = (serie) => {
           <a className="next a-browse">&#10095;</a>
         </div>
 
-        {/* women behind the screen */}
-        <div className="my-list div-list">
-          <h2 className="h2list mb-4" style={{ position: 'relative', top: '60px' }}>Animes</h2> 
-          <div className="list-div-width">
-            <div className="second-div-list">
-              <div className="nevertheless-list">
-                <img src="https://raw.githubusercontent.com/Chinemereem/Netflix-clone/master/images/intern.webp" alt="" />
-              </div>
-             
-            </div>
+       <div className="my-list div-list" id="animes">
+  <h2 className="h2list mb-4" style={{ position: 'relative', top: '60px' }}>Animes</h2> 
+  <div className="list-div-width">
+    <div className="second-div-list">
+      {contents
+        .filter((item) => item.tipo === "anime")
+        .map((anime) => (
+          <div
+            key={anime.id}
+            className="movie-item nevertheless-list"
+            style={{ cursor: "pointer" }}
+            onClick={() => openSeriesModal(anime)}
+          >
+            <img
+              src={`http://localhost:8000/portadas/${anime.portada}`}
+              alt={anime.titulo}
+            />
           </div>
-        </div>
+        ))}
+    </div>
+  </div>
+</div>
+
       </section>
  <footer>
         <div className="grid-container">

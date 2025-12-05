@@ -20,6 +20,7 @@ use App\Http\Controllers\AuthController;
 
 //RUTA DEL LOGIN
 Route::post('/login',[AuthController::class,'login']);
+Route::post('/users', [UsersController::class, 'store']);
 
 Route::middleware("jwt")->group(function(){
 //redirecciona al index de AccountsController
@@ -35,7 +36,6 @@ Route::resource('lists', ListasController::class);
 Route::resource('profiles', PerfilesController::class);
 Route::resource('subscriptions', SuscripcionesController::class);
 Route::resource('seasons', TemporadasController::class);
-Route::resource('users', UsersController::class);
 
 
 });

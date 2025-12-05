@@ -39,7 +39,7 @@ export default function SeriesDashboard() {
             });
             const data = await res.json();
             if (res.ok) {
-                const seriesOnly = data.data.filter(ep => ep.contenido?.tipo === "serie");
+                const seriesOnly = data.data.filter(ep => ep.contenido?.tipo !== "pelicula");
                 setEpisodes(seriesOnly);
             }
         } catch (err) {
@@ -54,7 +54,7 @@ export default function SeriesDashboard() {
             });
             const data = await res.json();
             if (res.ok) {
-                const series = data.data.filter(c => c.tipo === "serie");
+                const series = data.data.filter(c => c.tipo !== "pelicula");
                 setContents(series);
             }
         } catch (err) {
@@ -410,14 +410,14 @@ const handleEpisodeUpdate = async (e) => {
 
 
             {/* Modal de agregar capítulo */}
-            <Modal show={showEpisodeModal} onHide={() => setShowEpisodeModal(false)}>
+            <Modal show={showEpisodeModal} onHide={() => setShowEpisodeModal(false)} className='dark-modal text-white'>
                 <Modal.Header closeButton>
-                    <Modal.Title>Agregar Capítulo</Modal.Title>
+                    <Modal.Title className='text-white'>Agregar Capítulo</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form onSubmit={handleEpisodeSubmit}>
                         <Form.Group className="mb-3">
-                            <Form.Label>Título</Form.Label>
+                            <Form.Label className='text-white'>Título</Form.Label>
                             <Form.Control
                                 type="text"
                                 name="titulo"
@@ -427,7 +427,7 @@ const handleEpisodeUpdate = async (e) => {
                             />
                         </Form.Group>
                         <Form.Group className="mb-3">
-                            <Form.Label>Número</Form.Label>
+                            <Form.Label className='text-white'>Número</Form.Label>
                             <Form.Control
                                 type="number"
                                 name="numero"
@@ -437,7 +437,7 @@ const handleEpisodeUpdate = async (e) => {
                             />
                         </Form.Group>
                         <Form.Group className="mb-3">
-                            <Form.Label>Duración (min)</Form.Label>
+                            <Form.Label className='text-white'>Duración (min)</Form.Label>
                             <Form.Control
                                 type="number"
                                 name="duracion"
@@ -447,7 +447,7 @@ const handleEpisodeUpdate = async (e) => {
                             />
                         </Form.Group>
                         <Form.Group className="mb-3">
-                            <Form.Label>Sinopsis</Form.Label>
+                            <Form.Label className='text-white'>Sinopsis</Form.Label>
                             <Form.Control
                                 type="text"
                                 name="sinopsis"
@@ -457,7 +457,7 @@ const handleEpisodeUpdate = async (e) => {
                             />
                         </Form.Group>
                         <Form.Group className="mb-3">
-                            <Form.Label>Video</Form.Label>
+                            <Form.Label className='text-white'>Video</Form.Label>
                             <Form.Control
                                 type="file"
                                 name="video"
@@ -475,40 +475,40 @@ const handleEpisodeUpdate = async (e) => {
             {/* Modal para nueva temporada + capítulo */}
             <Modal show={showNewSeasonModal} onHide={() => setShowNewSeasonModal(false)}>
                 <Modal.Header closeButton>
-                    <Modal.Title>Agregar Nueva Temporada + Capítulo</Modal.Title>
+                    <Modal.Title className='text-white'>Agregar Nueva Temporada + Capítulo</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     <Form onSubmit={handleNewSeasonSubmit}>
-                        <h5>Temporada</h5>
+                        <h5 className='text-white'>Temporada</h5>
                         <Form.Group className="mb-3">
-                            <Form.Label>Número</Form.Label>
+                            <Form.Label className='text-white'>Número</Form.Label>
                             <Form.Control type="number" name="numero" value={newSeasonForm.numero} onChange={handleNewSeasonChange} required />
                         </Form.Group>
                         <Form.Group className="mb-3">
-                            <Form.Label>Título</Form.Label>
+                            <Form.Label className='text-white'>Título</Form.Label>
                             <Form.Control type="text" name="titulo" value={newSeasonForm.titulo} onChange={handleNewSeasonChange} required />
                         </Form.Group>
 
-                        <hr />
-                        <h5>Primer Capítulo</h5>
+                        <hr className='text-white' />
+                        <h5 className='text-white'>Primer Capítulo</h5>
                         <Form.Group className="mb-3">
-                            <Form.Label>Título</Form.Label>
+                            <Form.Label className='text-white'>Título</Form.Label>
                             <Form.Control type="text" name="capituloTitulo" value={newSeasonForm.capituloTitulo} onChange={handleNewSeasonChange} required />
                         </Form.Group>
                         <Form.Group className="mb-3">
-                            <Form.Label>Número</Form.Label>
+                            <Form.Label className='text-white'>Número</Form.Label>
                             <Form.Control type="number" name="capituloNumero" value={newSeasonForm.capituloNumero} onChange={handleNewSeasonChange} required />
                         </Form.Group>
                         <Form.Group className="mb-3">
-                            <Form.Label>Duración (min)</Form.Label>
+                            <Form.Label className='text-white'>Duración (min)</Form.Label>
                             <Form.Control type="number" name="capituloDuracion" value={newSeasonForm.capituloDuracion} onChange={handleNewSeasonChange} required />
                         </Form.Group>
                         <Form.Group className="mb-3">
-                            <Form.Label>Sinopsis</Form.Label>
+                            <Form.Label className='text-white'>Sinopsis</Form.Label>
                             <Form.Control type="text" name="capituloSinopsis" value={newSeasonForm.capituloSinopsis} onChange={handleNewSeasonChange} required />
                         </Form.Group>
                         <Form.Group className="mb-3">
-                            <Form.Label>Video</Form.Label>
+                            <Form.Label className='text-white'>Video</Form.Label>
                             <Form.Control type="file" name="capituloVideo" accept="video/*" onChange={handleNewSeasonChange} required />
                         </Form.Group>
 

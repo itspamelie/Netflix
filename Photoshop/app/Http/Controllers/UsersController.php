@@ -39,20 +39,29 @@ class UsersController extends Controller
         $validated = $request->validate([
             'name'=>'required|string|min:2',
             'email'=>'required|string|min:2',
-            'password'=>'required|string|min:4',
+            'password'=>'required|string|min:3',
             'phone'=>'required|string|min:10',
             'role'=>'required|boolean',
             'img'=>'required|string|min:2',
             'suscripcion_id'=>'required',
             'estatus_suscripcion'
         ]);
-        $data = User::create($validated);
-          return response()->json([
-            "status"=>"ok",
-            "mesage"=>"Usuario creado correctamente.",
-            "data"=>$data
+      
+    // Agregar valores por defecto
+    $validated['role'] = 1;
+    $validated['img'] = 'default.jpg';
+    $validated['estatus_suscripcion'] = true; // boolean para la base de datos
 
-        ]);
+    // Hash de la contraseña antes de guardar
+    $validated['password'] = bcrypt($validated['password']);
+
+    $data = User::create($validated);
+
+    return response()->json([
+        "status"=>"ok",
+        "message"=>"Usuario creado correctamente.",
+        "data"=>$data
+    ]);
     }
 
     /**

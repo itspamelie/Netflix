@@ -1,11 +1,14 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../css/login.css'
 import Header from '../layouts/Header';
 import Footer from '../layouts/footer';
+import Modal from "../layouts/Modal";  
+
 
 
 function Home() {
+   const [showModal, setShowModal] = useState(false);
 
   return (
 <>
@@ -190,7 +193,7 @@ function Home() {
                         <label>Correo electrónico</label>
                     </div>
                     <div className="col-auto">
-                        <button type="submit" className="get-started-btn red-btn fw-bold">Comenzar</button>
+                        <button type="button" className="get-started-btn red-btn fw-bold" onClick={() => setShowModal(true)}>Comenzar</button>
                     </div>
                 </form>
             </div>
@@ -198,6 +201,8 @@ function Home() {
 
       <Footer></Footer>
       </div>
+            <Modal show={showModal} onClose={() => setShowModal(false)} />
+
 </>
   )
 }
