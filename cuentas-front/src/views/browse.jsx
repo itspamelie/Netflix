@@ -414,7 +414,7 @@ const openSeriesModal = (serie) => {
         {/* VIDEO */}
         {selectedContent?.video && (
           <video
-            src={`http://localhost:8000/episodes/${selectedContent.video}`}
+            src={`http://localhost:8000/contents/${selectedContent.video}`}
             className="w-100 rounded mb-3"
             controls
           ></video>

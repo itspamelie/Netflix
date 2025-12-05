@@ -520,32 +520,32 @@ const handleEpisodeUpdate = async (e) => {
 
             <Modal show={showEditEpisodeModal} onHide={() => { setShowEditEpisodeModal(false); setEditingEpisode(null); }}>
   <Modal.Header closeButton>
-    <Modal.Title>Editar Capítulo</Modal.Title>
+    <Modal.Title className='text-white'>Editar Capítulo</Modal.Title>
   </Modal.Header>
   <Modal.Body>
     <Form onSubmit={handleEpisodeUpdate}>
       <Form.Group className="mb-3">
-        <Form.Label>Título</Form.Label>
-        <Form.Control type="text" name="titulo" value={episodeForm.titulo} onChange={handleEpisodeChange} required />
+        <Form.Label className='text-white'>Título</Form.Label>
+        <Form.Control className='text-white' type="text" name="titulo" value={episodeForm.titulo} onChange={handleEpisodeChange} required />
       </Form.Group>
 
       <Form.Group className="mb-3">
-        <Form.Label>Número</Form.Label>
+        <Form.Label className='text-white'>Número</Form.Label>
         <Form.Control type="number" name="numero" value={episodeForm.numero} onChange={handleEpisodeChange} required />
       </Form.Group>
 
       <Form.Group className="mb-3">
-        <Form.Label>Duración (min)</Form.Label>
+        <Form.Label className='text-white'>Duración (min)</Form.Label>
         <Form.Control type="number" name="duracion" value={episodeForm.duracion} onChange={handleEpisodeChange} required />
       </Form.Group>
 
       <Form.Group className="mb-3">
-        <Form.Label>Sinopsis</Form.Label>
+        <Form.Label className='text-white'>Sinopsis</Form.Label>
         <Form.Control type="text" name="sinopsis" value={episodeForm.sinopsis} onChange={handleEpisodeChange} required />
       </Form.Group>
 
       <Form.Group className="mb-3">
-        <Form.Label>Video (opcional)</Form.Label>
+        <Form.Label className='text-white'>Video (opcional)</Form.Label>
         <Form.Control type="file" name="video" accept="video/*" onChange={handleEpisodeChange} />
       </Form.Group>
 
